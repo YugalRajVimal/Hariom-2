@@ -606,8 +606,12 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                 <Text>Trade Discount</Text>
                 <Text>
                   {showRODetails.agencyCommission1}%+
-                  {showRODetails.agencyCommission2}%+
-                  {showRODetails.agencyCommission3}%
+                  {showRODetails.agencyCommission2
+                    ? `${showRODetails.agencyCommission2}%+`
+                    : ""}
+                  {showRODetails.agencyCommission3
+                    ? `${showRODetails.agencyCommission3}%`
+                    : ""}
                 </Text>
               </View>
               <View
@@ -623,8 +627,12 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                   {Math.ceil(
                     showRODetails.roAmount *
                       ((parseFloat(showRODetails.agencyCommission1) +
-                        parseFloat(showRODetails.agencyCommission2) +
-                        parseFloat(showRODetails.agencyCommission3)) /
+                        (showRODetails.agencyCommission2
+                          ? parseFloat(showRODetails.agencyCommission2)
+                          : 0) +
+                        (showRODetails.agencyCommission3
+                          ? parseFloat(showRODetails.agencyCommission3)
+                          : 0)) /
                         100)
                   )}
                 </Text>
