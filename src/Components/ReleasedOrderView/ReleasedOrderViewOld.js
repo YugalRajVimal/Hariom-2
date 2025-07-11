@@ -473,7 +473,7 @@ const ReleasedOrderPDF = ({ showRODetails = {} }) => (
         >
           <Text>PAN:AUAPA8929Q</Text>
 
-          <Text>GSTIN:07AUAPA8929Q1ZQ</Text>
+          <Text>GSTIN:07AUAPA8929Q1Z5</Text>
           <Text
             style={{
               fontSize: "20px",

@@ -22,7 +22,7 @@ const ROAndQFGeneration = () => {
     category: "",
     code: "",
     roRate: 0,
-    roDate: "",
+    roDate: new Date().toISOString().split("T")[0],
     roHeight: 0,
     roWidth: 0,
     roMultiplyBy: 0,
@@ -362,8 +362,24 @@ const ROAndQFGeneration = () => {
     const a1 = parseFloat(agencyCommission1) || 0;
     const a2 = parseFloat(agencyCommission2) || 0;
     const a3 = parseFloat(agencyCommission3) || 0;
-    const totalCommission = ((a1 + a2 + a3) / 100) * roAmount;
-    const roTotalAmount = roAmount - totalCommission;
+    let step1 = roAmount - roAmount * (a1 / 100);
+    let step2;
+    let commission = roAmount * (a1 / 100);
+    if (a2) {
+      step2 = step1 - step1 * (a2 / 100);
+      commission = step1 * (a2 / 100);
+    } else {
+      step2 = step1;
+    }
+    let step3;
+    if (a3) {
+      step3 = step2 - step2 * (a3 / 100);
+      commission = step2 * (a3 / 100);
+    } else {
+      step3 = step2;
+    }
+    const totalCommission = parseFloat(commission.toFixed(2));
+    const roTotalAmount = parseFloat(step3.toFixed(2));
     const qTotalAmount = qAmount - discount;
 
     setFormData((prev) => ({
@@ -416,7 +432,7 @@ const ROAndQFGeneration = () => {
           category: "",
           code: "",
           roRate: 0,
-          roDate: "",
+          roDate: new Date().toISOString().split("T")[0],
           agencyCommission1: "",
           agencyCommission2: "",
           agencyCommission3: "",
@@ -473,6 +489,10 @@ const ROAndQFGeneration = () => {
       setCommonFormEditing(true);
       setRoFormEditing(true);
       setQFormEditing(true);
+      // formData.quotationDetailsCompleted = false;
+      // oldOrder.quotationDetailsCompleted = false;
+
+      setOldOrder("");
 
       setFormData({
         publicationName: "",
@@ -494,7 +514,7 @@ const ROAndQFGeneration = () => {
         category: "",
         code: "",
         roRate: 0,
-        roDate: "",
+        roDate: new Date().toISOString().split("T")[0],
         percentageOfGST: 5,
         agencyCommission1: "",
         agencyCommission2: "",
@@ -513,6 +533,7 @@ const ROAndQFGeneration = () => {
         paymentTerms: "",
         discount: "",
         qDate: "",
+        quotationDetailsCompleted: false,
       });
     }
   };
@@ -561,9 +582,9 @@ const ROAndQFGeneration = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="w-[75vw] orverflow-y-auto mb-10 ">
+    <div className="w-[80vw] orverflow-y-auto mb-10 ">
       {/* Modernized Common Details */}
-      <div className="flex justify-between px-4 py-2 w-full bg-gray-100 shadow-sm ">
+      <div className="flex justify-between px-2 py-1 w-full bg-gray-100 shadow-sm ">
         <div className="text-left">
           <h4 className="text-gray-700 font-bold text-lg">
             Order ID:{" "}
@@ -578,7 +599,7 @@ const ROAndQFGeneration = () => {
           </span>
         </div>
       </div>
-      <div className="flex justify-between items-center px-4 py-2">
+      <div className="flex justify-between items-center px-2 py-1">
         <button
           onClick={() => handleNewOrder()}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
@@ -586,14 +607,14 @@ const ROAndQFGeneration = () => {
           New Order
         </button>
         <div className="w-[70%] flex flex-col">
-          {/* <label htmlFor="oldOrder" className="mb-1 font-medium text-left pr-2">
+          {/* <label htmlFor="oldOrder" className="mb-1 font-xl text-left pr-2">
             Select Old Order
           </label> */}
           <select
             id="oldOrder"
             value={selectedOrderId}
             onChange={(e) => handleSelectOldOrder(e)}
-            className="w-full border border-purple-700 rounded-md px-3 py-2 bg-white shadow"
+            className="w-full border border-purple-700 rounded-md px-2 py-1 bg-white shadow"
           >
             <option value="--">Select Old Order</option>
             {oldOrders.map((order) => (
@@ -607,7 +628,7 @@ const ROAndQFGeneration = () => {
       <div>
         <div
           // onClick={() => setCollapseCommonForm(!collapseCommonForm)}
-          className="bg-blue-200 px-2 py-1 rounded-t-md transition ease-in-out duration-200 mt-6 mx-12 mb-2 text-xl text-left font-semibold flex justify-between items-center "
+          className="bg-blue-200 px-2 py-1 rounded-t-md transition ease-in-out duration-200 mt-2 mx-12 text-xl text-left font-semibold flex justify-between items-center "
         >
           <span>Fill Details</span>
           {/* <span>{collapseCommonForm ? "↓" : "↑"}</span>  */}
@@ -615,11 +636,59 @@ const ROAndQFGeneration = () => {
         <div
           className={`flex flex-col justify-center items-center bg-white rounded-t-xl mx-10 py-6  `}
         >
-          <div className="w-full md:w-[90%] flex flex-row gap-6">
-            <div className="w-1/2 flex flex-col gap-6">
+          <div className="w-full md:w-[90%] flex flex-col  gap-3">
+            <div className=" flex flex-row gap-6 justify-around">
+              {/* RoNo */}
+              <div className="flex flex-col w-1/3">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  R.O. No.
+                </label>
+                <input
+                  type="text"
+                  value={orderId}
+                  disabled
+                  className="border bg-zinc-200 border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
+              {/* Client Name */}
+              <div className="flex flex-col relative w-2/3">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Client Name <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="clientName"
+                  value={formData.clientName}
+                  onChange={handleClientSearch}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                  disabled={commonFormDisabled}
+                  autoComplete="off"
+                  required
+                />
+
+                {/* Dropdown list */}
+                {searchResult.length > 0 && (
+                  <ul className="absolute top-full left-0 w-full max-h-40 overflow-y-auto mt-1 border border-purple-400 bg-white shadow-md rounded-md z-10">
+                    {searchResult.map((client, index) => (
+                      <li
+                        key={index}
+                        className="px-2 py-1 hover:bg-purple-100 cursor-pointer text-sm "
+                        onClick={() => {
+                          setFormData({ ...formData, clientName: client });
+                          setSearchResult([]);
+                        }}
+                      >
+                        {client}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+            <div className=" flex flex-row gap-6 justify-around">
               {/* Publisher Name  */}
-              <div className="flex flex-col h-20 relative">
-                <label className="mb-1 font-medium text-left">
+              <div className="flex flex-col relative w-2/3 ">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Publication Name <span className="text-red-600">*</span>
                 </label>
                 <input
@@ -627,7 +696,7 @@ const ROAndQFGeneration = () => {
                   name="publicationName"
                   value={formData.publicationName}
                   onChange={handlePublicationSearch}
-                  className="border border-purple-700 rounded-md px-3 py-2 "
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   disabled={commonFormDisabled}
                   autoComplete="off"
                   required
@@ -639,7 +708,7 @@ const ROAndQFGeneration = () => {
                     {searchResultPublication.map((publication, index) => (
                       <li
                         key={index}
-                        className="px-4 py-2 hover:bg-purple-100 cursor-pointer text-sm"
+                        className="px-2 py-1 hover:bg-purple-100 cursor-pointer text-sm"
                         onClick={() => {
                           setFormData({
                             ...formData,
@@ -655,8 +724,54 @@ const ROAndQFGeneration = () => {
                 )}
               </div>
 
-              <div className="flex flex-col h-20">
-                <label className="mb-1 font-medium text-left">
+              {/* Date of Insertion */}
+              <div className="flex flex-col w-1/3">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Date of Insertion <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="date"
+                  name="dateOfInsertion"
+                  value={formatDate(formData.dateOfInsertion)}
+                  onChange={handleChange}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                  disabled={commonFormDisabled}
+                  required
+                />
+              </div>
+            </div>
+            <div className=" flex flex-row gap-6 justify-around">
+              {/* Position  */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Position <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="position"
+                  value={formData.position}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
+              {/* Category */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Category <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
+              {/* No. Of Ads  */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
                   No. of Ads <span className="text-red-600">*</span>
                 </label>
                 <input
@@ -665,85 +780,30 @@ const ROAndQFGeneration = () => {
                   name="noOfAds"
                   value={formData.noOfAds}
                   onChange={handleChange}
-                  className="border border-purple-700 rounded-md px-3 py-2 "
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   disabled={commonFormDisabled}
                   required
                 />
               </div>
-
-              {/* Scheme */}
-              <div className="flex flex-col h-20">
-                <label className="mb-1 font-medium text-left">
-                  Scheme / Matter Instruction{" "}
-                  <span className="text-red-600">*</span>
+              {/* Order / Reference ID */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Order / Reference ID <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
-                  name="scheme"
-                  value={formData.scheme}
+                  name="orderRefId"
+                  value={formData.orderRefId}
                   onChange={handleChange}
-                  className="border border-purple-700 rounded-md px-3 py-2 "
-                  disabled={commonFormDisabled}
-                  required
-                />
-              </div>
-
-              {/* Position */}
-              <div className="flex flex-col h-20">
-                <label className="mb-1 font-medium text-left">
-                  Position <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="position"
-                  value={formData.position}
-                  onChange={handleChange}
-                  className="border border-purple-700 rounded-md px-3 py-2 "
-                  disabled={commonFormDisabled}
-                  required
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
                 />
               </div>
             </div>
-
-            <div className="w-1/2 flex flex-col gap-6">
-              {/* Client Name */}
-              <div className="flex flex-col h-20 relative">
-                <label className="mb-1 font-medium text-left">
-                  Client Name <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  name="clientName"
-                  value={formData.clientName}
-                  onChange={handleClientSearch}
-                  className="border border-purple-700 rounded-md px-3 py-2 "
-                  disabled={commonFormDisabled}
-                  autoComplete="off"
-                  required
-                />
-
-                {/* Dropdown list */}
-                {searchResult.length > 0 && (
-                  <ul className="absolute top-full left-0 w-full max-h-40 overflow-y-auto mt-1 border border-purple-400 bg-white shadow-md rounded-md z-10">
-                    {searchResult.map((client, index) => (
-                      <li
-                        key={index}
-                        className="px-4 py-2 hover:bg-purple-100 cursor-pointer text-sm"
-                        onClick={() => {
-                          setFormData({ ...formData, clientName: client });
-                          setSearchResult([]);
-                        }}
-                      >
-                        {client}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-
+            <div className=" flex flex-row gap-6 justify-around">
               {/* Hue */}
-              <div className="flex flex-col h-20">
-                <label className="mb-1 font-medium text-left">
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
                   HUI <span className="text-red-600">*</span>
                 </label>
                 <div className="flex gap-4 justify-evenly items-center">
@@ -755,7 +815,7 @@ const ROAndQFGeneration = () => {
                       checked={formData.hui === "B/W"}
                       onChange={handleChange}
                       disabled={commonFormDisabled}
-                      className="h-full"
+                      className="h-full "
                       required
                     />
                     <span className="px-4">B/W</span>
@@ -775,10 +835,202 @@ const ROAndQFGeneration = () => {
                   </label>
                 </div>
               </div>
+              {/* Scheme */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Scheme / Matter Instruction{" "}
+                  <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="scheme"
+                  value={formData.scheme}
+                  onChange={handleChange}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                  disabled={commonFormDisabled}
+                  required
+                />
+              </div>
+              {/* Width */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Width (in cm) <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="roWidth"
+                  value={formData.roWidth}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                  required
+                />
+              </div>
 
+              {/* Height */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Height (in cm) <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="roHeight"
+                  value={formData.roHeight}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                  required
+                />
+              </div>
+            </div>
+            <div className=" flex flex-row gap-6 justify-around">
+              {/* Rate */}
+              <div className="flex flex-col w-1/2">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Rate <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="roRate"
+                  value={formData.roRate}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
+              {/* Multiply By  */}
+              <div className="flex flex-col w-1/2">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Multiply By <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="roMultiplyBy"
+                  value={formData.roMultiplyBy}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                  required
+                />
+              </div>
+              {/*Amount */}
+              <div className="flex flex-col w-1/2">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="roAmount"
+                  value={formData.roAmount}
+                  disabled
+                  onChange={handleChange}
+                  className="border bg-zinc-200 border-purple-700  rounded-md px-2 py-1 w-full"
+                />
+              </div>
+              {/* Agency Commission 1 */}
+              <div className="flex flex-col w-1/2">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Agency Commission 1 <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="agencyCommission1"
+                  value={formData.agencyCommission1}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
+              {/* Agency Commission 2 */}
+              <div className="flex flex-col w-1/2">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Agency Commission 2
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="agencyCommission2"
+                  value={formData.agencyCommission2}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
+            </div>
+            <div className=" flex flex-row gap-6 justify-around">
+              {/* Agency Commission 3 */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Agency Commission 3
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="agencyCommission3"
+                  value={formData.agencyCommission3}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
+              {/*Total Agency Commissions */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Total Commission
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="totalCommission"
+                  value={formData.totalCommission}
+                  disabled
+                  onChange={handleChange}
+                  className="border bg-zinc-200 border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
+              {/*Total Agency Commissions */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Total Amount
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="roTotalAmount"
+                  value={formData.roTotalAmount}
+                  disabled
+                  onChange={handleChange}
+                  className="border bg-zinc-200 border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
+              {/*Percentage of GST */}
+              <div className="flex flex-col w-1/4">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  GST (in %) <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  name="percentageOfGST"
+                  value={formData.percentageOfGST}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className=" flex flex-row gap-6 justify-around">
               {/* Remark */}
-              <div className="flex flex-col h-20">
-                <label className="mb-1 font-medium text-left">
+              <div className="flex flex-col w-1/5">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Remark <span className="text-red-600">*</span>
                 </label>
                 <input
@@ -786,15 +1038,29 @@ const ROAndQFGeneration = () => {
                   name="remark"
                   value={formData.remark}
                   onChange={handleChange}
-                  className="border border-purple-700 rounded-md  px-3 py-2 "
+                  className="border border-purple-700 rounded-md  px-2 py-1 w-full"
                   disabled={commonFormDisabled}
                   required
                 />
               </div>
+              {/* Code */}
+              <div className="flex flex-col w-1/5">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Code <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="code"
+                  value={formData.code}
+                  onChange={handleChange}
+                  disabled={roFormDisabled}
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                />
+              </div>
 
               {/* Date of Insertion */}
-              <div className="flex flex-col h-20">
-                <label className="mb-1 font-medium text-left">
+              <div className="flex flex-col w-1/5">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Date of Insertion <span className="text-red-600">*</span>
                 </label>
                 <input
@@ -802,9 +1068,39 @@ const ROAndQFGeneration = () => {
                   name="dateOfInsertion"
                   value={formatDate(formData.dateOfInsertion)}
                   onChange={handleChange}
-                  className="border border-purple-700 rounded-md px-3 py-2 "
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   disabled={commonFormDisabled}
                   required
+                />
+              </div>
+
+              {/* Agency Code */}
+              <div className="flex flex-col w-1/5">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Agency Code
+                </label>
+                <input
+                  type="text"
+                  name="agencyCode"
+                  value={formData.agencyCode}
+                  // onChange={handleChange}
+                  disabled
+                  className="border bg-zinc-200 border-purple-700 rounded-md bg-white  px-2 py-1 w-full"
+                />
+              </div>
+              {/* Date */}
+              <div className="flex flex-col w-1/5">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  name="roDate"
+                  value={formatDate(formData.roDate)}
+                  onChange={handleChange}
+                  disabled
+                  className="border bg-zinc-200 border-purple-700 rounded-md px-2 py-1 w-full"
+                  defaultValue={new Date().toISOString().split("T")[0]}
                 />
               </div>
             </div>
@@ -821,261 +1117,8 @@ const ROAndQFGeneration = () => {
       {/* Released Order Form and Quotation Form should be conditionally rendered */}
 
       <div
-        className={`flex flex-col justify-center items-center bg-white rounded-b-xl mx-10 pb-6 mb-10 `}
+        className={`flex flex-col justify-center items-center bg-white rounded-b-xl mx-10 `}
       >
-        <div className="w-full md:w-[90%] flex flex-row gap-6">
-          <div className="flex flex-col gap-6 w-1/2">
-            {/* Agency Code */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">Agency Code</label>
-              <input
-                type="text"
-                name="agencyCode"
-                value={formData.agencyCode}
-                // onChange={handleChange}
-                disabled
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-
-            {/* Order / Reference ID */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">
-                Order / Reference ID
-              </label>
-              <input
-                type="text"
-                name="orderRefId"
-                value={formData.orderRefId}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-
-            {/* Code */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">Code</label>
-              <input
-                type="text"
-                name="code"
-                value={formData.code}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-
-            {/* Size */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">
-                Width <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="roWidth"
-                value={formData.roWidth}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-                required
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">
-                Multiply By <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="roMultiplyBy"
-                value={formData.roMultiplyBy}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-                required
-              />
-            </div>
-
-            {/* Date */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">Date</label>
-              <input
-                type="date"
-                name="roDate"
-                value={formatDate(formData.roDate)}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-            {/* Agency Commission 1 */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">
-                Agency Commission 1 <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="agencyCommission1"
-                value={formData.agencyCommission1}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-            {/* Agency Commission 2 */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">
-                Agency Commission 2
-              </label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="agencyCommission2"
-                value={formData.agencyCommission2}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-            {/* Agency Commission 3 */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">
-                Agency Commission 3
-              </label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="agencyCommission3"
-                value={formData.agencyCommission3}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-6 w-1/2">
-            {/* RoNo */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">R.O. No.</label>
-              <input
-                type="text"
-                value={orderId}
-                disabled
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-
-            {/* Customer Id */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">Category</label>
-              <input
-                type="text"
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-
-            {/* Rate */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">Rate</label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="roRate"
-                value={formData.roRate}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-
-            {/* Size */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">
-                Height <span className="text-red-600">*</span>
-              </label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="roHeight"
-                value={formData.roHeight}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-                required
-              />
-            </div>
-
-            {/*Percentage of GST */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">
-                Percentage of GST
-              </label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="percentageOfGST"
-                value={formData.percentageOfGST}
-                onChange={handleChange}
-                disabled={roFormDisabled}
-                className="border border-purple-700 rounded-md px-3 py-2"
-                required
-              />
-            </div>
-
-            {/*Total Agency Commissions */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">
-                Total Commission
-              </label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="totalCommission"
-                value={formData.totalCommission}
-                disabled
-                onChange={handleChange}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-
-            {/*Total Agency Commissions */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">Amount</label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="roAmount"
-                value={formData.roAmount}
-                disabled
-                onChange={handleChange}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-
-            {/*Total Agency Commissions */}
-            <div className="flex flex-col">
-              <label className="mb-1 font-medium text-left">Total Amount</label>
-              <input
-                type="number"
-                onWheel={(e) => e.target.blur()}
-                name="roTotalAmount"
-                value={formData.roTotalAmount}
-                disabled
-                onChange={handleChange}
-                className="border border-purple-700 rounded-md px-3 py-2"
-              />
-            </div>
-          </div>
-        </div>
-
         {/* {oldOrder.commonDetailsCompleted || formData.commonDetailsCompleted ? (
           <div className="flex gap-4">
             {commonFormEditing ? (
@@ -1168,7 +1211,7 @@ const ROAndQFGeneration = () => {
                     saveCommonDetails();
                     handleSaveReleasedOrder();
                   }}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-2"
                 >
                   Save All Details
                 </button>
@@ -1180,7 +1223,7 @@ const ROAndQFGeneration = () => {
                     setRoFormDisabled(false);
                     setRoFormEditing(true);
                   }}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-2"
                 >
                   Edit All Details
                 </button>
@@ -1192,7 +1235,7 @@ const ROAndQFGeneration = () => {
                 saveCommonDetails();
                 handleSaveReleasedOrder();
               }}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-2"
             >
               Save All Details
             </button>
@@ -1238,45 +1281,51 @@ const ROAndQFGeneration = () => {
               <div className="flex flex-col w-1/2 gap-6">
                 {/* Address */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Address</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Address
+                  </label>
                   <input
                     type="text"
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
                     disabled={qFormDisabled}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
                 {/* Pin Code */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Pin Code</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Pin Code
+                  </label>
                   <input
                     type="text"
                     name="pincode"
                     value={formData.pincode}
                     onChange={handleChange}
                     disabled={qFormDisabled}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
                 {/* Phone */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Phone</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Phone
+                  </label>
                   <input
                     type="text"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     disabled={qFormDisabled}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
-                <div className="flex flex-col h-20">
-                  <label className="mb-1 font-medium text-left">
+                <div className="flex flex-col">
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
                     Height <span className="text-red-600">*</span>
                   </label>
                   <input
@@ -1286,27 +1335,29 @@ const ROAndQFGeneration = () => {
                     value={formData.qHeight}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2 h-[90%]"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full h-[90%]"
                     required
                   />
                 </div>
 
                 {/* Referral */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Referral</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Referral
+                  </label>
                   <input
                     type="text"
                     name="referral"
                     value={formData.referral}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
                 {/* Payment Terms */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
                     Payment Terms
                   </label>
                   <input
@@ -1315,26 +1366,30 @@ const ROAndQFGeneration = () => {
                     value={formData.paymentTerms}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
                 {/* Date */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Date</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Date
+                  </label>
                   <input
                     type="date"
                     name="qDate"
                     value={formatDate(formData.qDate)}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
                 {/*Total Agency Commissions */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Amount</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Amount
+                  </label>
                   <input
                     type="number"
                     onWheel={(e) => e.target.blur()}
@@ -1342,27 +1397,29 @@ const ROAndQFGeneration = () => {
                     value={formData.qAmount}
                     disabled
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
               </div>
               <div className="flex flex-col w-1/2 gap-6">
                 {/* Invoice */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Invoice</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Invoice
+                  </label>
                   <input
                     type="text"
                     name="invoice"
                     value={formData.invoice}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
                 {/* Customer Id */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
                     Customer ID
                   </label>
                   <input
@@ -1371,25 +1428,27 @@ const ROAndQFGeneration = () => {
                     value={formData.customerId}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
                 {/* Due Date */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Due Date</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Due Date
+                  </label>
                   <input
                     type="date"
                     name="dueDate"
                     value={formatDate(formData.dueDate)}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
-                <div className="flex flex-col h-20">
-                  <label className="mb-1 font-medium text-left">
+                <div className="flex flex-col">
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
                     Width <span className="text-red-600">*</span>
                   </label>
                   <input
@@ -1399,13 +1458,13 @@ const ROAndQFGeneration = () => {
                     value={formData.qWidth}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2 h-[90%]"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full h-[90%]"
                     required
                   />
                 </div>
 
-                <div className="flex flex-col h-20">
-                  <label className="mb-1 font-medium text-left">
+                <div className="flex flex-col">
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
                     Multiply By <span className="text-red-600">*</span>
                   </label>
                   <input
@@ -1415,14 +1474,16 @@ const ROAndQFGeneration = () => {
                     value={formData.qMultiplyBy}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2 h-[90%]"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full h-[90%]"
                     required
                   />
                 </div>
 
                 {/* Rate */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Rate</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Rate
+                  </label>
                   <input
                     type="number"
                     onWheel={(e) => e.target.blur()}
@@ -1430,13 +1491,15 @@ const ROAndQFGeneration = () => {
                     value={formData.qRate}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
                 {/* Discount in % */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">Discount</label>
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
+                    Discount
+                  </label>
                   <input
                     type="number"
                     onWheel={(e) => e.target.blur()}
@@ -1444,13 +1507,13 @@ const ROAndQFGeneration = () => {
                     value={formData.discount}
                     disabled={qFormDisabled}
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
 
                 {/*Total Agency Commissions */}
                 <div className="flex flex-col">
-                  <label className="mb-1 font-medium text-left">
+                  <label className="whitespace-nowrap mb-1 font-xl text-left">
                     Total Amount
                   </label>
                   <input
@@ -1460,7 +1523,7 @@ const ROAndQFGeneration = () => {
                     value={formData.qTotalAmount}
                     disabled
                     onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-3 py-2"
+                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   />
                 </div>
               </div>

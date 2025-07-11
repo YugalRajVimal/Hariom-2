@@ -120,7 +120,7 @@ const AllClients = () => {
   const groupKeys = Object.keys(groupedClients).sort();
 
   return (
-    <div className="w-[75vw] h-[90vh]">
+    <div className="w-[80vw] h-[90vh]">
       <h4 className="  transition ease-in-out duration-200 mt-6 mx-12 mb-2 text-xl text-left font-semibold">
         All Clients
       </h4>

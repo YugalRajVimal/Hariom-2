@@ -1,7 +1,8 @@
 import React from "react";
-import { Page, Text, View, Document, Image } from "@react-pdf/renderer";
+import { Page, Text, View, Document, Image, Font } from "@react-pdf/renderer";
 
 import { ToWords } from "to-words";
+Font.registerHyphenationCallback((word) => [word]);
 
 const toWords = new ToWords({
   localeCode: "en-IN",

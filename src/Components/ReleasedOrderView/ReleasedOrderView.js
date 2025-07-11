@@ -1,5 +1,9 @@
 import React from "react";
-import { Page, Text, View, Document, Image } from "@react-pdf/renderer";
+import { Page, Text, View, Document, Image, Font } from "@react-pdf/renderer";
+
+Font.registerHyphenationCallback((word) => [word]);
+
+
 
 const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
   <Document>
@@ -17,6 +21,9 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
           flexDirection: "column",
           backgroundColor: "#FAFAFA",
           border: "1px solid rgb(0, 0, 0)",
+          hyphens: "none",
+          wordBreak: "keep-all",
+          lineBreak: "strict",
         }}
       >
         {/* Top Header */}
@@ -81,7 +88,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               style={{
                 width: 107,
                 height: 79,
-                position: "absolute",
+                position: "aolute",
                 top: 15,
                 left: 15,
                 backgroundColor: "lightgrey",
@@ -283,16 +290,34 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
             >
               <View style={{ flexDirection: "row", width: "50%" }}>
                 <Text
-                  style={{ fontWeight: "bold", marginRight: 8, width: "110px" }}
+                  style={{
+                    wordBreak: "keep-all",
+                    overflowWrap: "normal",
+                    hyphens: "none",
+                    fontWeight: "bold",
+                    marginRight: 8,
+                    width: "110px",
+                  }}
                 >
                   {row.label1}
                 </Text>
-                <Text>: {row.value1}</Text>
+                <Text
+                  style={{
+                    wordBreak: "keep-all",
+                    overflowWrap: "normal",
+                    hyphens: "none",
+                  }}
+                >
+                  : {row.value1}
+                </Text>
               </View>
               {row.label2 && (
                 <View style={{ flexDirection: "row", width: "50%" }}>
                   <Text
                     style={{
+                      wordBreak: "keep-all",
+                      overflowWrap: "normal",
+                      hyphens: "none",
                       fontWeight: "bold",
                       marginRight: 8,
                       width: "70px",
@@ -300,7 +325,15 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                   >
                     {row.label2}
                   </Text>
-                  <Text>: {row.value2}</Text>
+                  <Text
+                    style={{
+                      wordBreak: "keep-all",
+                      overflowWrap: "normal",
+                      hyphens: "none",
+                    }}
+                  >
+                    : {row.value2}
+                  </Text>
                 </View>
               )}
             </View>
@@ -623,19 +656,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                   alignItems: "center",
                 }}
               >
-                <Text>
-                  {Math.ceil(
-                    showRODetails.roAmount *
-                      ((parseFloat(showRODetails.agencyCommission1) +
-                        (showRODetails.agencyCommission2
-                          ? parseFloat(showRODetails.agencyCommission2)
-                          : 0) +
-                        (showRODetails.agencyCommission3
-                          ? parseFloat(showRODetails.agencyCommission3)
-                          : 0)) /
-                        100)
-                  )}
-                </Text>
+                <Text>{Math.ceil(showRODetails.roTotalAmount)}</Text>
               </View>
             </View>
             <View

@@ -125,7 +125,7 @@ const BillGeneration = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="w-[75vw]  h-full bg-white shadow-lg  p-8 space-y-6">
+    <div className="w-[80vw] h-[90vh] bg-white  p-8 space-y-6">
       <h4 className="text-3xl font-bold text-gray-800 border-b pb-3">
         Bill Generation
       </h4>

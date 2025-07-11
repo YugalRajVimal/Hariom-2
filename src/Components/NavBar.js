@@ -2,14 +2,14 @@ import React from "react";
 
 const NavBar = () => {
   return (
-    <nav className="flex md:min-h-[10vh] flex-wrap items-center justify-center md:justify-between px-8 py-4 bg-[#350d56] text-white">
+    <nav className="flex h-[10vh] flex-wrap items-center justify-center md:justify-between px-8 bg-[#350d56] text-white overflow-hidden">
       {/* Logo and Company Name */}
-      <div className="flex items-center min-w-0">
+      <div className="flex items-center ">
         {/* Logo */}
         <img
           src="/logoView.png"
           alt="Company Logo"
-          className="h-14  mr-4 object-cover bg-white"
+          className="max-h-14 h-full  mr-4 object-cover bg-white"
         />
         {/* Company Name */}
         <a href="/">

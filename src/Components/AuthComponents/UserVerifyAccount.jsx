@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 const VerifyAccount = () => {
   const location = useLocation();
-  const { email, role } = location.state || {};
+  const { email } = location.state || {};
   const navigate = useNavigate();
 
   // State for form inputs
@@ -20,13 +20,12 @@ const VerifyAccount = () => {
       email,
       otp,
       password,
-      role,
     };
 
     try {
       // Make POST request to the API
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/user/verify-account`,
+        `${process.env.REACT_APP_API_URL}/auth/verify`,
         {
           method: "POST",
           headers: {
@@ -53,7 +52,7 @@ const VerifyAccount = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-[90vh] w-screen bg-white">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-lg">
         <h3 className="text-xl font-semibold  text-center">
           Verify Your Account

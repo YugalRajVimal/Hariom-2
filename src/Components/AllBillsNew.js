@@ -51,7 +51,7 @@ const AllBillsNew = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="w-[75vw] h-[90vh]">
+    <div className="w-[80vw] h-[90vh]">
       <h4 className="mt-6 mx-12 mb-2 text-xl text-left font-semibold transition ease-in-out duration-200">
         All Bills
       </h4>

@@ -7,7 +7,6 @@ const UserResetPassword = () => {
   // State to manage email and password input
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [isSeller, setIsSeller] = useState(false);
 
   //   // Handle form submission
   const handleSubmit = async (e) => {
@@ -16,13 +15,12 @@ const UserResetPassword = () => {
     // Create reset password data object
     const resetPasswordData = {
       email,
-      role: isSeller ? "seller" : "customer",
     };
 
     try {
       // Make POST request to the reset password API
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/user/reset-password`,
+        `${process.env.REACT_APP_API_URL}/auth/reset-password`,
         {
           method: "POST",
           headers: {
@@ -37,7 +35,9 @@ const UserResetPassword = () => {
       if (response.ok) {
         // Redirect to verify account
         alert("Verify your email to reset your password");
-        navigate("/verify-account", { state: { email: email, role: isSeller ? "seller" : "customer"  } });
+        navigate("/verify-account", {
+          state: { email: email },
+        });
       } else {
         // Handle reset password failure
         setError(
@@ -50,14 +50,14 @@ const UserResetPassword = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-[90vh] w-screen bg-white">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-lg">
         <div className="flex justify-between items-center ">
           <h2 className="text-xl font-semibold text-center text-gray-900 ">
             Reset Password
           </h2>
 
-          <div className="flex items-center justify-center">
+          {/* <div className="flex items-center justify-center">
             <label htmlFor="isSeller" className="mr-2 text-xs text-gray-600">
               Seller's Account
             </label>
@@ -69,7 +69,7 @@ const UserResetPassword = () => {
               checked={isSeller}
               onChange={(e) => setIsSeller(e.target.checked)}
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Error message */}
@@ -111,13 +111,6 @@ const UserResetPassword = () => {
                 className="font-medium text-indigo-600 hover:text-indigo-500 px-1"
               >
                 Log In
-              </a>
-              /
-              <a
-                href="/signup"
-                className="font-medium text-indigo-600 hover:text-indigo-500 px-1"
-              >
-                Sign Up
               </a>
             </div>
           </div>

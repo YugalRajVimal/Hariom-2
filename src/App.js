@@ -26,6 +26,8 @@ import AllReleasedOrders from "./Components/AllReleaseOrderNew";
 import BillGeneration from "./Components/BillGeneration";
 import AllBillsNew from "./Components/AllBillsNew";
 import AllQuotationForm from "./Components/Old/AllQuotationsOld";
+import UserResetPassword from "./Components/AuthComponents/UserResetPassword";
+import VerifyAccount from "./Components/AuthComponents/UserVerifyAccount";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState("false");
@@ -56,20 +58,19 @@ function App() {
         setIsAuthenticated(false);
       }
     };
-
     authenticate();
   }, [isAuthenticated]);
 
   return (
     <>
       <Router>
-        <div className="App bg-slate-200">
+        <div className="App bg-white h-screen overflow-x-hidden">
           {isAuthenticated && <NavBar />}
-          <div className="flex w-screen">
+          <div className="flex w-screen overflow-x-hidden">
             {isAuthenticated && (
               <Dashboard setIsAuthenticated={setIsAuthenticated} />
             )}
-            <div className="h-[90vh] transition ease-in-out duration-200 overflow-y-auto">
+            <div className="h-[90vh]  bg-white transition ease-in-out duration-200 overflow-y-auto overflow-x-hidden hide-scrollbar">
               <Routes>
                 {isAuthenticated && (
                   <>
@@ -121,6 +122,12 @@ function App() {
                       />
                     }
                   />
+                  <Route
+                    path="/reset-password"
+                    element={<UserResetPassword />}
+                  />
+
+                  <Route path="/verify-account" element={<VerifyAccount />} />
                   <Route path="*" element={<Navigate replace to="/signin" />} />
                 </>
               </Routes>

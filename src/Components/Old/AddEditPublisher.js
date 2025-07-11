@@ -234,7 +234,7 @@ const AddEditPublisher = () => {
   }, []);
 
   return (
-    <div className="w-[75vw] h-[90vh]">
+    <div className="w-[80vw] h-[90vh]">
       <h4 className="transition ease-in-out duration-200 mt-6 mx-12 mb-2 text-xl text-left font-semibold">
         Add/Edit Publishers
       </h4>
@@ -429,7 +429,9 @@ const AddEditPublisher = () => {
                     <tr key={idx} className="hover:bg-purple-50">
                       <td className="py-2 px-4 border-b">{ro.roNo}</td>
 
-                      <td className="py-2 px-4 border-b">{ro.quotationFormNo}</td>
+                      <td className="py-2 px-4 border-b">
+                        {ro.quotationFormNo}
+                      </td>
 
                       <td className="py-2 px-4 border-b">{ro.clientName}</td>
                       <td className="py-2 px-4 border-b">
@@ -474,7 +476,8 @@ const AddEditPublisher = () => {
                   <strong>Released Order Number:</strong> {moreDetails.roNo}
                 </div>
                 <div className="mb-2">
-                  <strong>Quotation Form Number:</strong> {moreDetails.quotationFormNo}
+                  <strong>Quotation Form Number:</strong>{" "}
+                  {moreDetails.quotationFormNo}
                 </div>
                 <div className="mb-2">
                   <strong>Client ID:</strong> {moreDetails.clientId}

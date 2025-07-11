@@ -219,7 +219,7 @@ const AddEditClients = () => {
   );
 
   return (
-    <div className="w-[75vw] h-[90vh]">
+    <div className="w-[80vw] h-[90vh]">
       <h4 className="transition ease-in-out duration-200 mt-6 mx-12 mb-2 text-xl text-left font-semibold">
         Add/Edit Clients
       </h4>
@@ -391,8 +391,9 @@ const AddEditClients = () => {
             </div>
 
             <div className="text-left">
-            <p>
-                <strong>Quotation Form Number:</strong> {moreDetails.quotationFormNumber}
+              <p>
+                <strong>Quotation Form Number:</strong>{" "}
+                {moreDetails.quotationFormNumber}
               </p>
               <p>
                 <strong>Client ID:</strong> {moreDetails.clientId}

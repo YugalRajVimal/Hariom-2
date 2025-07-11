@@ -29,14 +29,18 @@ const ROForm = () => {
   const [clients, setClients] = useState([]);
   const [publishers, setPublishers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         const [clientRes, publisherRes] = await Promise.all([
-          axios.get(`${process.env.REACT_APP_API_URL}/api/get-all-clients`, { headers: { Authorization: `${token}` } }),
-          axios.get(`${process.env.REACT_APP_API_URL}/api/get-all-publishers`, { headers: { Authorization: `${token}` } }),
+          axios.get(`${process.env.REACT_APP_API_URL}/api/get-all-clients`, {
+            headers: { Authorization: `${token}` },
+          }),
+          axios.get(`${process.env.REACT_APP_API_URL}/api/get-all-publishers`, {
+            headers: { Authorization: `${token}` },
+          }),
         ]);
         console.log(clientRes.data);
         console.log(publisherRes.data);
@@ -68,7 +72,7 @@ const ROForm = () => {
     const a1 = parseFloat(agency1) || 0;
     const a2 = parseFloat(agency2) || 0;
     const a3 = parseFloat(agency3) || 0;
-    const totalCommission = ((a1 + a2 + a3)/100) * amount;
+    const totalCommission = ((a1 + a2 + a3) / 100) * amount;
     const totalAmount = amount - totalCommission;
 
     setFormData((prev) => ({
@@ -97,27 +101,44 @@ const ROForm = () => {
 
   const handleClientIdName = (e) => {
     const { name, value } = e.target;
-    const selectedClient = clients.find(client => client.clientName === value);
+    const selectedClient = clients.find(
+      (client) => client.clientName === value
+    );
     if (selectedClient) {
       setFormData((prev) => ({ ...prev, [`${name}Id`]: selectedClient._id }));
-      setFormData((prev) => ({ ...prev, [`${name}Name`]: selectedClient.clientName }));
+      setFormData((prev) => ({
+        ...prev,
+        [`${name}Name`]: selectedClient.clientName,
+      }));
     }
   };
 
   const handlePublisherIdName = (e) => {
     const { name, value } = e.target;
-    const selectedPublisher = publishers.find(publisher => publisher.publisherName === value);
+    const selectedPublisher = publishers.find(
+      (publisher) => publisher.publisherName === value
+    );
     if (selectedPublisher) {
-      setFormData((prev) => ({ ...prev, [`${name}Id`]: selectedPublisher._id }));
-      setFormData((prev) => ({ ...prev, [`${name}Name`]: selectedPublisher.publisherName }));
+      setFormData((prev) => ({
+        ...prev,
+        [`${name}Id`]: selectedPublisher._id,
+      }));
+      setFormData((prev) => ({
+        ...prev,
+        [`${name}Name`]: selectedPublisher.publisherName,
+      }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/create-released-order`, formData, { headers: { Authorization: `${token}` } });
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/create-released-order`,
+        formData,
+        { headers: { Authorization: `${token}` } }
+      );
       console.log("Form Data Submitted:", response.data);
       alert("RO Saved Successfully!");
     } catch (err) {
@@ -126,11 +147,11 @@ const ROForm = () => {
     }
   };
 
-
-
   return (
-    <div className="w-[75vw] h-[90vh]">
-      <h4 className=" transition ease-in-out duration-200  mt-6 mx-12 mb-2 text-xl text-left font-semibold">Released Order Form</h4>
+    <div className="w-[80vw] h-[90vh]">
+      <h4 className=" transition ease-in-out duration-200  mt-6 mx-12 mb-2 text-xl text-left font-semibold">
+        Released Order Form
+      </h4>
       <div className="flex flex-col justify-center items-center bg-white rounded-xl mx-10 mb-10 py-6">
         <form
           onSubmit={handleSubmit}
@@ -149,7 +170,9 @@ const ROForm = () => {
 
           {/* Quotation Form Number */}
           <div className="flex flex-col">
-            <label className="mb-1 font-medium text-left">Quotation Form Number</label>
+            <label className="mb-1 font-medium text-left">
+              Quotation Form Number
+            </label>
             <input
               type="text"
               name="quotationFormNo"
@@ -158,7 +181,6 @@ const ROForm = () => {
               className="border border-purple-700 rounded-md px-3 py-2"
             />
           </div>
-
 
           {/* Client Name */}
           <div className="flex flex-col">
@@ -398,8 +420,6 @@ const ROForm = () => {
               </div>
             ))}
           </div>
-
-          
 
           {/* Submit */}
           <div className="flex justify-center pt-4">

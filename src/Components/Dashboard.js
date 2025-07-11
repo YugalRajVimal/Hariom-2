@@ -44,7 +44,7 @@ const Dashboard = (props) => {
   };
 
   return (
-    <nav className="w-[25%] pb-6 flex flex-col h-[90vh] sticky top-0 justify-between items-center border-slate-300 border-r-2">
+    <nav className="w-[20%]  pb-6 flex flex-col h-[90vh] overflow-x-hidden hide-scrollbar overflow-y-auto sticky top-0 justify-between items-center border-slate-300 border-r-2">
       <div className="w-full">
         <a href="/">
           <h2 className="text-3xl font-serif tracking-wide font-light font-semibold mb-6 py-4  text-black  border-slate-300 border-b-2 ml-4">
@@ -53,50 +53,6 @@ const Dashboard = (props) => {
         </a>
 
         <ul className="flex flex-col items-end gap-4 list-none text-base ml-4">
-          {/* <li>
-    <Link
-      to="/"
-      className="text-gray-800 hover:text-purple-600 font-medium transition-colors"
-    >
-      Dashboard
-    </Link>
-  </li> */}
-          {/* <li
-            className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
-          ${selectedLink == 3 && "bg-purple-300 h-[65px] w-[92%]"}
-          `}
-          >
-            <div
-              className={`h-5 aspect-[1/1] border-purple-500 border-2 rounded-full ${
-                selectedLink == 3 && "bg-purple-500 border-purple-600"
-              }`}
-            ></div>
-            <Link
-              to="/add-edit-clients"
-              onClick={() => setSelectedLink(3)}
-              className="text-gray-800 hover:text-purple-600 font-semibold transition-colors"
-            >
-              Add/Edit Client
-            </Link>
-          </li> */}
-          {/* <li
-            className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
-          ${selectedLink == 4 && "bg-purple-300 h-[65px] w-[92%]"}
-          `}
-          >
-            <div
-              className={`h-5 aspect-[1/1] border-purple-500 border-2 rounded-full ${
-                selectedLink == 4 && "bg-purple-500 border-purple-600"
-              }`}
-            ></div>
-            <Link
-              to="/add-edit-publishers"
-              onClick={() => setSelectedLink(4)}
-              className="text-gray-800 hover:text-purple-600 font-semibold transition-colors"
-            >
-              Add/Edit Publisher
-            </Link>
-          </li> */}
           <li
             className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]  ${
               selectedLink == 1 && "bg-purple-300 h-[65px] w-[92%]"
@@ -134,61 +90,7 @@ const Dashboard = (props) => {
               All Quotations
             </Link>
           </li>
-          {/* 
-          <li
-            className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
-          ${selectedLink == 2 && "bg-purple-300 h-[65px] w-[92%]"}
-          `}
-          >
-            <div
-              className={`h-5 aspect-[1/1] border-purple-500 border-2 rounded-full ${
-                selectedLink == 2 && "bg-purple-500 border-purple-600"
-              }`}
-            ></div>
-            <Link
-              to="/released-order-form"
-              onClick={() => setSelectedLink(2)}
-              className="text-gray-800 hover:text-purple-600 font-semibold transition-colors"
-            >
-              Released Order Form
-            </Link>
-          </li> */}
-          {/* <li
-            className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
-          ${selectedLink == 5 && "bg-purple-300 h-[65px] w-[92%]"}
-          `}
-          >
-            <div
-              className={`h-5 aspect-[1/1] border-purple-500 border-2 rounded-full ${
-                selectedLink == 5 && "bg-purple-500 border-purple-600"
-              }`}
-            ></div>
-            <Link
-              to="/all-clients"
-              onClick={() => setSelectedLink(5)}
-              className="text-gray-800 hover:text-purple-600 font-semibold transition-colors"
-            >
-              All Clients
-            </Link>
-          </li>
-          <li
-            className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
-          ${selectedLink == 6 && "bg-purple-300 h-[65px] w-[92%]"}
-          `}
-          >
-            <div
-              className={`h-5 aspect-[1/1] border-purple-500 border-2 rounded-full ${
-                selectedLink == 6 && "bg-purple-500 border-purple-600"
-              }`}
-            ></div>
-            <Link
-              to="/all-publishers"
-              onClick={() => setSelectedLink(6)}
-              className="text-gray-800 hover:text-purple-600 font-semibold transition-colors"
-            >
-              All Publishers
-            </Link>
-          </li> */}
+
           <li
             className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
           ${selectedLink == 8 && "bg-purple-300 h-[65px] w-[92%]"}
@@ -298,7 +200,7 @@ const Dashboard = (props) => {
           </button> */}
           <button
             onClick={() => setLogoutModal(true)}
-            className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            className="px-4 py-1 bg-red-600 text-white rounded hover:bg-red-700 mt-6"
           >
             Log Out
           </button>
@@ -417,8 +319,8 @@ const Dashboard = (props) => {
         </div>
       )}
       {logoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-xl p-6">
+        <div className="fixed z-60 inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white z-70 rounded-lg shadow-lg w-full max-w-xl p-6">
             <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
             <p>Are you sure you want to logout?</p>
             <div className="flex justify-end gap-2 mt-4">

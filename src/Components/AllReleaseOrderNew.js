@@ -51,7 +51,7 @@ const AllOrders = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="w-[75vw] h-[90vh]">
+    <div className="w-[80vw] h-[90vh]">
       <h4 className="mt-6 mx-12 mb-2 text-xl text-left font-semibold transition ease-in-out duration-200">
         All Released Orders
       </h4>
@@ -123,7 +123,12 @@ const AllOrders = () => {
                   .map(
                     (ro) =>
                       ro.releasedOrderDetailsCompleted && (
-                        <tr key={ro.orderId} className={`hover:bg-purple-50 ${!ro.billDetailsCompleted&&"bg-red-200"}`}>
+                        <tr
+                          key={ro.orderId}
+                          className={`hover:bg-purple-50 ${
+                            !ro.billDetailsCompleted && "bg-red-200"
+                          }`}
+                        >
                           <td className="py-2 px-4 border-b">
                             {new Date(ro.roDate).toLocaleDateString()}
                           </td>

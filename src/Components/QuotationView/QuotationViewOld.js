@@ -110,7 +110,7 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
           padding: 4,
         }}
       >
-        <Text>GSTIN:07AUAPA8929Q1ZQ</Text>
+        <Text>GSTIN:07AUAPA8929Q1Z5</Text>
         <Text>PAN:AUAPA8929Q</Text>
       </View>
 
