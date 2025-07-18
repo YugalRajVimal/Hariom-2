@@ -3,8 +3,6 @@ import { Page, Text, View, Document, Image, Font } from "@react-pdf/renderer";
 
 Font.registerHyphenationCallback((word) => [word]);
 
-
-
 const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
   <Document>
     <Page
@@ -88,7 +86,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               style={{
                 width: 107,
                 height: 79,
-                position: "aolute",
+                position: "absolute",
                 top: 15,
                 left: 15,
                 backgroundColor: "lightgrey",
@@ -164,7 +162,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                 >
                   Web:{" "}
                 </Text>
-                www.hariommad.com
+                www.hariomad.com
               </Text>{" "}
               |{" "}
               <Text>
@@ -214,7 +212,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: 8,
+            // marginBottom: 8,
             color: "#ffffff",
             fontSize: 16,
             backgroundColor: "black",
@@ -230,7 +228,6 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
             flexDirection: "column",
             width: "100%",
             marginBottom: 10,
-            paddingHorizontal: 4,
           }}
         >
           {[
@@ -249,6 +246,8 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
             {
               label1: "Agency Code",
               value1: showRODetails.agencyCode,
+              label2: "Code",
+              value2: showRODetails.code,
             },
             // {
             //   label1: "Client Id:",
@@ -268,10 +267,6 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               label2: "Category",
               value2: showRODetails.category,
             },
-            {
-              label1: "Code",
-              value1: showRODetails.code,
-            },
             // {
             //   label1: "Reference No.",
             //   value1: showRODetails.referenceNo,
@@ -285,10 +280,22 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                 flexDirection: "row",
                 justifyContent: "space-between",
                 width: "100%",
-                marginBottom: 8,
+                // marginBottom: 8,
+                borderBottomWidth: 1,
+                borderColor: "black",
               }}
             >
-              <View style={{ flexDirection: "row", width: "50%" }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  width: "50%",
+                  paddingHorizontal: 4,
+                  paddingVertical: 4,
+                  alignItems: "center",
+                  borderRightWidth: 1,
+                  borderColor: "black",
+                }}
+              >
                 <Text
                   style={{
                     wordBreak: "keep-all",
@@ -303,6 +310,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                 </Text>
                 <Text
                   style={{
+                    width: "100%",
                     wordBreak: "keep-all",
                     overflowWrap: "normal",
                     hyphens: "none",
@@ -312,7 +320,16 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                 </Text>
               </View>
               {row.label2 && (
-                <View style={{ flexDirection: "row", width: "50%" }}>
+                <View
+                  style={{
+                    alignItems: "center",
+                    flexDirection: "row",
+                    width: "50%",
+                    paddingHorizontal: 4,
+                    paddingVertical: 4,
+                    borderColor: "black",
+                  }}
+                >
                   <Text
                     style={{
                       wordBreak: "keep-all",
@@ -574,7 +591,17 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               <Text style={{ fontWeight: "bold", color: "#374151" }}>
                 Remarks:
               </Text>
-              <Text style={{ textAlign: "right" }}>{showRODetails.remark}</Text>
+              <Text
+                style={{
+                  textAlign: "left",
+                  width: "100%",
+                  wordBreak: "keep-all",
+                  overflowWrap: "normal",
+                  hyphens: "none",
+                }}
+              >
+                {showRODetails.remark}
+              </Text>
             </View>
             {/* Special Instructions */}
             <View
@@ -615,7 +642,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
             style={{
               flex: 2,
               backgroundColor: "#FFFFFF",
-              fontSize: 8,
+              fontSize: 11,
             }}
           >
             <View

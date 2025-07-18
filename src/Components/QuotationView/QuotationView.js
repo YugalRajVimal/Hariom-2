@@ -223,7 +223,6 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
         <View
           style={{
             flexDirection: "row",
-            paddingHorizontal: 8,
           }}
         >
           {/* Details Left Section */}
@@ -235,7 +234,11 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
               style={{
                 flexDirection: "row",
                 width: "100%",
-                marginBottom: 10,
+                paddingVertical: 6,
+                borderTopWidth: 1,
+                // borderRightWidth: 1,
+                borderColor: "black",
+                paddingHorizontal: 8,
               }}
             >
               <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
@@ -289,7 +292,11 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                 style={{
                   flexDirection: "row",
                   width: "100%",
-                  marginBottom: 10,
+                  paddingVertical: 6,
+                  borderTopWidth: 1,
+                  borderRightWidth: 1,
+                  borderColor: "black",
+                  paddingHorizontal: 8,
                 }}
               >
                 <View style={{ flexDirection: "row" }}>
@@ -309,8 +316,110 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
             ))}
           </View>
           {/* Details Right Section */}
-
           <View style={{ flexDirection: "column", width: "50%" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                paddingVertical: 6,
+                borderTopWidth: 1,
+                borderColor: "black",
+                paddingHorizontal: 8,
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    width: "90px",
+                    marginRight: 4,
+                    fontSize: 10,
+                    color: "white",
+                  }}
+                >
+                  Customer Name
+                </Text>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    marginRight: 2,
+                    fontSize: 14,
+                    color: "white",
+                  }}
+                >
+                  :
+                </Text>
+                <Text
+                  style={{ fontWeight: "bold", fontSize: 14, color: "white" }}
+                >
+                  {showQFDetails.clientName}
+                </Text>
+              </View>
+            </View>
+
+            {[
+              {
+                label1: "Date",
+                value1: `${new Date(showQFDetails.date).getDate()}/${
+                  new Date(showQFDetails.date).getMonth() + 1
+                }/${new Date(showQFDetails.date).getFullYear()}`,
+              },
+              {
+                label1: "Invoice",
+                value1: showQFDetails.invoice,
+              },
+              {
+                label1: "Customer Id",
+                value1: showQFDetails.customerId,
+              },
+              {
+                label1: "Due Date",
+                value1: showQFDetails.dueDate
+                  ? `${new Date(showQFDetails.dueDate).getDate()}/${
+                      new Date(showQFDetails.dueDate).getMonth() + 1
+                    }/${new Date(showQFDetails.dueDate).getFullYear()}`
+                  : "",
+              },
+              {},
+            ].map((row, index) => (
+              <View
+                key={index}
+                style={{
+                  flexDirection: "row",
+                  width: "100%",
+                  paddingVertical: 6,
+                  borderTopWidth: 1,
+                  borderColor: "black",
+                  paddingHorizontal: 8,
+                }}
+              >
+                <View style={{ flexDirection: "row", height: "100%" }}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      width: "90px",
+                      marginRight: 4,
+                    }}
+                  >
+                    {row.label1}
+                  </Text>
+
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      marginRight: 2,
+                      color: row.label1 ? "black" : "white",
+                    }}
+                  >
+                    :
+                  </Text>
+                  <Text>{row.value1}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          {/* <View style={{ flexDirection: "column", width: "50%" }}>
             <View
               style={{
                 flexDirection: "column",
@@ -344,6 +453,8 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                     justifyContent: "flex-start",
                     border: "1 solid black",
                     borderBottomWidth: 0,
+                    borderRightWidth: 0,
+
                     alignItems: "center",
                     paddingHorizontal: 4,
                     paddingVertical: 4,
@@ -378,6 +489,8 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                     justifyContent: "flex-start",
                     border: "1 solid black",
                     borderBottomWidth: 0,
+                    borderRightWidth: 0,
+
                     alignItems: "center",
                     paddingHorizontal: 4,
                     paddingVertical: 4,
@@ -410,6 +523,8 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                     justifyContent: "flex-start",
                     border: "1 solid black",
                     borderBottomWidth: 0,
+                    borderRightWidth: 0,
+
                     alignItems: "center",
                     paddingHorizontal: 4,
                     paddingVertical: 4,
@@ -441,6 +556,8 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                     display: "flex",
                     justifyContent: "flex-start",
                     border: "1 solid black",
+                    borderRightWidth: 0,
+
                     alignItems: "center",
                     paddingHorizontal: 4,
                     paddingVertical: 4,
@@ -454,7 +571,7 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                 </Text>
               </View>
             </View>
-          </View>
+          </View> */}
         </View>
 
         {/* Ad Table Section */}
@@ -621,6 +738,7 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
               backgroundColor: "#FFFFFF",
               borderRight: "1px solid rgb(0, 0, 0)",
               width: "71.58%",
+              height: "100%",
             }}
           >
             <View
@@ -628,12 +746,21 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                 flexDirection: "row",
                 flex: 4,
                 gap: 10,
-                marginBottom: 10,
+                marginBottom: 2,
                 padding: 5,
                 borderBottom: "1px solid rgb(0, 0, 0)",
               }}
             >
-              <Text style={{ fontSize: 8, color: "#374151" }}>Remarks:</Text>
+              <Text
+                style={{
+                  fontSize: 8,
+                  color: "#374151",
+                  fontSize: 11,
+                  fontWeight: "bold",
+                }}
+              >
+                Remarks:
+              </Text>
               <Text style={{ textAlign: "left", paddingRight: 16 }}>
                 {showQFDetails.remark}
               </Text>
@@ -643,17 +770,18 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                 flexDirection: "column",
                 flex: 8,
                 gap: 10,
-                marginBottom: 10,
                 paddingHorizontal: 4,
-                fontSize: 8,
+                paddingBottom: 10,
+                fontSize: 10,
                 borderBottom: "1px solid rgb(0, 0, 0)",
               }}
             >
               <Text
                 style={{
-                  fontSize: 8,
+                  fontSize: 11,
                   color: "#374151",
                   textAlign: "center",
+                  fontWeight: "bold",
                 }}
               >
                 Bank Details
@@ -810,7 +938,7 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
             style={{
               flex: 2,
               backgroundColor: "#FFFFFF",
-              fontSize: 8,
+              fontSize: 11,
               height: "280px",
             }}
           >

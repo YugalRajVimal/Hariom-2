@@ -190,12 +190,23 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
             }}
           >
             <Text style={{ fontWeight: "bold" }}>Buyer (Bill to)</Text>
-            <Text style={{ fontSize: 12, fontWeight: "bold", padding: 2 }}>
-              {" "}
-              {allDetails.clientName}
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: "bold",
+                paddingHorizontal: 4,
+                paddingBottom: 4,
+              }}
+            >
+              {allDetails.billClientName
+                ? allDetails.billClientName
+                : allDetails.clientName}
             </Text>
-            <Text style={{ fontSize: 10, paddingHorizontal: 4 }}>
-              Address : {allDetails.address}
+            <Text
+              style={{ fontSize: 10, paddingHorizontal: 4, paddingBottom: 4 }}
+            >
+              <Text style={{ fontWeight: "bold" }}>Address :</Text>
+              {allDetails.address}
             </Text>
           </View>
           <View style={{ flex: 2, flexDirection: "column" }}>
@@ -239,7 +250,12 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   padding: 2,
                 }}
               >
-                <Text>Delivery Note</Text>
+                <Text>Client GST No.</Text>
+                <Text style={{ fontWeight: "bold" }}>
+                  {billDetails.clientGSTNumber
+                    ? billDetails.clientGSTNumber
+                    : "N/A"}
+                </Text>
               </View>
               <View
                 style={{ flex: 1, borderBottom: "1 solid black", padding: 2 }}
@@ -427,15 +443,17 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
             }}
           >
             <View>
-              <Text
-                style={{
-                  fontSize: 10,
-                  fontWeight: "bold",
-                  paddingHorizontal: 2,
-                }}
-              >
-                {billDetails.descHeading}
-              </Text>
+              {billDetails.descHeading && (
+                <Text
+                  style={{
+                    fontSize: 10,
+                    fontWeight: "bold",
+                    paddingHorizontal: 2,
+                  }}
+                >
+                  {billDetails.descHeading}
+                </Text>
+              )}
               <Text style={{ fontSize: 10, paddingLeft: 4 }}>
                 PUB : {allDetails.publicationName}
               </Text>
@@ -447,12 +465,17 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                     }/${new Date(allDetails.dateOfInsertion).getFullYear()}`
                   : ""}
               </Text>
-              <Text style={{ fontSize: 10, paddingLeft: 4 }}>
+              {/* <Text style={{ fontSize: 10, paddingLeft: 4 }}>
                 Remark : {allDetails.remark}
-              </Text>
+              </Text> */}
               <Text style={{ fontSize: 10, paddingLeft: 4 }}>
                 Category : {allDetails.category}
               </Text>
+              {allDetails.amountSummary && (
+                <Text style={{ fontSize: 10, paddingHorizontal: 4 }}>
+                  Acc. Summary :{allDetails.amountSummary}
+                </Text>
+              )}
             </View>
             {/* <View
               style={{
@@ -494,7 +517,7 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                     padding: 2,
                   }}
                 >
-                  {allDetails.roMultiplyBy}
+                  {/* {allDetails.roMultiplyBy} */}
                 </Text>
               </View>
               <View
@@ -513,7 +536,7 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                       padding: 2,
                     }}
                   >
-                    {allDetails.qRate}{" "}
+                    {/* {allDetails.qRate}{" "} */}
                   </Text>
                 </View>
                 {/* <View
@@ -674,12 +697,7 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   padding: "1.5px",
                 }}
               >
-                {Math.ceil(
-                  Number(allDetails.roMultiplyBy) *
-                    Number(allDetails.roHeight) *
-                    Number(allDetails.roWidth) *
-                    Number(allDetails.qRate)
-                )}
+                {Number(allDetails.billAmount).toFixed(2)}
               </Text>
               <View
                 style={{
@@ -699,7 +717,7 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                     padding: "1.5px",
                   }}
                 >
-                  {Math.ceil(allDetails.discount)}
+                  {Number(allDetails.discount).toFixed(2)}
                 </Text>
                 <Text
                   style={{
@@ -713,13 +731,10 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   }}
                 >
                   <Text>
-                    {Math.ceil(
-                      Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount
-                    )}
+                    {(
+                      Number(allDetails.billAmount) -
+                      Number(allDetails.discount)
+                    ).toFixed(2)}
                   </Text>
                 </Text>
                 <Text
@@ -734,25 +749,17 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   }}
                 >
                   {allDetails.typeOfGST == "CGST+SGST" &&
-                    `${Math.ceil(
-                      ((Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount) *
+                    `${(
+                      ((Number(allDetails.billAmount) - allDetails.discount) *
                         (allDetails.percentageOfGST * 2)) /
-                        100
-                    )}`}
+                      100
+                    ).toFixed(2)}`}
                   {allDetails.typeOfGST == "IGST" &&
-                    `${Math.ceil(
-                      ((Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount) *
+                    `${(
+                      ((Number(allDetails.billAmount) - allDetails.discount) *
                         allDetails.percentageOfGST) /
-                        100
-                    )}`}
+                      100
+                    ).toFixed(2)}`}
                 </Text>
                 <Text
                   style={{
@@ -769,49 +776,13 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   }}
                 >
                   {/* {Math.ceil(
-                    Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
+                    Number(allDetails.billAmount) -
                         allDetails.discount +
-                      (Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
+                      (Number(allDetails.billAmount) -
                         allDetails.discount * allDetails.percentageOfGST) /
                         100
                   )} */}
-
-                  {allDetails.typeOfGST == "CGST+SGST" &&
-                    `${Math.ceil(
-                      Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount +
-                        ((Number(allDetails.roMultiplyBy) *
-                          Number(allDetails.roHeight) *
-                          Number(allDetails.roWidth) *
-                          Number(allDetails.qRate) -
-                          allDetails.discount) *
-                          (allDetails.percentageOfGST * 2)) /
-                          100
-                    )}`}
-                  {allDetails.typeOfGST == "IGST" &&
-                    `${Math.ceil(
-                      Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount +
-                        ((Number(allDetails.roMultiplyBy) *
-                          Number(allDetails.roHeight) *
-                          Number(allDetails.roWidth) *
-                          Number(allDetails.qRate) -
-                          allDetails.discount) *
-                          allDetails.percentageOfGST) /
-                          100
-                    )}`}
+                  {`${Math.ceil(Number(allDetails.billTotalAmount))}`}
                 </Text>
               </View>
             </View>
@@ -821,15 +792,9 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 fontSize: 10,
               }}
             >
-              <Text>{Math.ceil(Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
+              <Text>{Math.ceil(Number(allDetails.billAmount) -
                         allDetails.discount * 0.025)}</Text>
-              <Text>{Math.ceil(Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
+              <Text>{Math.ceil(Number(allDetails.billAmount) -
                         allDetails.discount * 0.025)}</Text>
             </View> */}
           </View>
@@ -879,14 +844,8 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
           >
             <Text>
               {Math.ceil(
-                Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount + Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
+                Number(allDetails.billAmount) -
+                        allDetails.discount + Number(allDetails.billAmount) -
                         allDetails.discount * 0.05
               )}
             </Text>
@@ -929,20 +888,7 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
               </Text>
               <Text style={{ fontWeight: "bold", paddingHorizontal: 4 }}>
                 Indian Rupees{" "}
-                {convertAmountToWords(
-                  Number(allDetails.roMultiplyBy) *
-                    Number(allDetails.roHeight) *
-                    Number(allDetails.roWidth) *
-                    Number(allDetails.qRate) -
-                    allDetails.discount +
-                    (Number(allDetails.roMultiplyBy) *
-                      Number(allDetails.roHeight) *
-                      Number(allDetails.roWidth) *
-                      Number(allDetails.qRate) -
-                      allDetails.discount) *
-                      0.05
-                )}{" "}
-                Only
+                {convertAmountToWords(Number(allDetails.billTotalAmount))} Only
               </Text>
             </View>
 
@@ -1039,13 +985,9 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 }}
               >
                 <Text>
-                  {Math.ceil(
-                    Number(allDetails.roMultiplyBy) *
-                      Number(allDetails.roHeight) *
-                      Number(allDetails.roWidth) *
-                      Number(allDetails.qRate) -
-                      allDetails.discount
-                  )}
+                  {(
+                    Number(allDetails.billAmount) - allDetails.discount
+                  ).toFixed(2)}
                 </Text>
               </View>{" "}
               <View
@@ -1058,13 +1000,9 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 }}
               >
                 <Text>
-                  {Math.ceil(
-                    Number(allDetails.roMultiplyBy) *
-                      Number(allDetails.roHeight) *
-                      Number(allDetails.roWidth) *
-                      Number(allDetails.qRate) -
-                      allDetails.discount
-                  )}
+                  {(
+                    Number(allDetails.billAmount) - allDetails.discount
+                  ).toFixed(2)}
                 </Text>
               </View>
             </View>
@@ -1147,15 +1085,11 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   }}
                 >
                   <Text>
-                    {Math.ceil(
-                      ((Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount) *
+                    {(
+                      ((Number(allDetails.billAmount) - allDetails.discount) *
                         allDetails.percentageOfGST) /
-                        100
-                    )}
+                      100
+                    ).toFixed(2)}
                   </Text>
                 </View>
               </View>
@@ -1187,15 +1121,11 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   }}
                 >
                   <Text>
-                    {Math.ceil(
-                      ((Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount) *
+                    {(
+                      ((Number(allDetails.billAmount) - allDetails.discount) *
                         allDetails.percentageOfGST) /
-                        100
-                    )}
+                      100
+                    ).toFixed(2)}
                   </Text>
                 </View>
               </View>
@@ -1281,15 +1211,11 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 >
                   {allDetails.typeOfGST == "CGST+SGST" && (
                     <Text>
-                      {Math.ceil(
-                        ((Number(allDetails.roMultiplyBy) *
-                          Number(allDetails.roHeight) *
-                          Number(allDetails.roWidth) *
-                          Number(allDetails.qRate) -
-                          allDetails.discount) *
+                      {(
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
                           allDetails.percentageOfGST) /
-                          100
-                      )}
+                        100
+                      ).toFixed(2)}
                     </Text>
                   )}
                   {allDetails.typeOfGST == "IGST" && <Text></Text>}
@@ -1324,15 +1250,11 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 >
                   {allDetails.typeOfGST == "CGST+SGST" && (
                     <Text>
-                      {Math.ceil(
-                        ((Number(allDetails.roMultiplyBy) *
-                          Number(allDetails.roHeight) *
-                          Number(allDetails.roWidth) *
-                          Number(allDetails.qRate) -
-                          allDetails.discount) *
+                      {(
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
                           allDetails.percentageOfGST) /
-                          100
-                      )}
+                        100
+                      ).toFixed(2)}
                     </Text>
                   )}
                   {allDetails.typeOfGST == "IGST" && <Text></Text>}
@@ -1367,27 +1289,20 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
               >
                 {allDetails.typeOfGST == "CGST+SGST" && (
                   <Text>
-                    {Math.ceil(
-                      ((Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount) *
+                    {(
+                      ((Number(allDetails.billAmount) - allDetails.discount) *
                         (allDetails.percentageOfGST * 2)) /
-                        100
-                    )}
+                      100
+                    ).toFixed(2)}
                   </Text>
                 )}
                 {allDetails.typeOfGST == "IGST" && (
                   <Text>
-                    {Math.ceil(
-                      (Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount * allDetails.percentageOfGST) /
-                        100
-                    )}
+                    {(
+                      ((Number(allDetails.billAmount) - allDetails.discount) *
+                        allDetails.percentageOfGST) /
+                      100
+                    ).toFixed(2)}
                   </Text>
                 )}
               </View>{" "}
@@ -1402,28 +1317,20 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
               >
                 {allDetails.typeOfGST == "CGST+SGST" && (
                   <Text>
-                    {Math.ceil(
-                      ((Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount) *
+                    {(
+                      ((Number(allDetails.billAmount) - allDetails.discount) *
                         (allDetails.percentageOfGST * 2)) /
-                        100
-                    )}
+                      100
+                    ).toFixed(2)}
                   </Text>
                 )}
                 {allDetails.typeOfGST == "IGST" && (
                   <Text>
-                    {Math.ceil(
-                      ((Number(allDetails.roMultiplyBy) *
-                        Number(allDetails.roHeight) *
-                        Number(allDetails.roWidth) *
-                        Number(allDetails.qRate) -
-                        allDetails.discount) *
+                    {(
+                      ((Number(allDetails.billAmount) - allDetails.discount) *
                         allDetails.percentageOfGST) /
-                        100
-                    )}
+                      100
+                    ).toFixed(2)}
                   </Text>
                 )}
               </View>
@@ -1614,27 +1521,19 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
               >
                 {allDetails.typeOfGST == "CGST+SGST"
                   ? convertAmountToWords(
-                      Math.ceil(
-                        ((Number(allDetails.roMultiplyBy) *
-                          Number(allDetails.roHeight) *
-                          Number(allDetails.roWidth) *
-                          Number(allDetails.qRate) -
-                          allDetails.discount) *
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
                           (allDetails.percentageOfGST * 2)) /
-                          100
-                      )
+                        100
+                      ).toFixed(2)
                     )
                   : allDetails.typeOfGST == "IGST"
                   ? convertAmountToWords(
-                      Math.ceil(
-                        ((Number(allDetails.roMultiplyBy) *
-                          Number(allDetails.roHeight) *
-                          Number(allDetails.roWidth) *
-                          Number(allDetails.qRate) -
-                          allDetails.discount) *
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
                           allDetails.percentageOfGST) /
-                          100
-                      )
+                        100
+                      ).toFixed(2)
                     )
                   : ""}
               </Text>

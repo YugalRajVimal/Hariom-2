@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { use, useEffect, useState } from "react";
 import ReleasedOrderPDF from "../ReleasedOrderView/ReleasedOrderView";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
 import QuotationPDF from "../QuotationView/QuotationView";
 
 const ROAndQFGeneration = () => {
@@ -25,7 +25,7 @@ const ROAndQFGeneration = () => {
     roDate: new Date().toISOString().split("T")[0],
     roHeight: 0,
     roWidth: 0,
-    roMultiplyBy: 0,
+    roMultiplyBy: 1,
     percentageOfGST: 5,
     agencyCommission1: "",
     agencyCommission2: "",
@@ -57,6 +57,15 @@ const ROAndQFGeneration = () => {
     releasedOrderDetailsCompleted: false,
     quotationDetailsCompleted: false,
   });
+
+  const handlePreviewPDF = async (orderId, formData) => {
+    const blob = await pdf(
+      <ReleasedOrderPDF orderId={orderId} showRODetails={formData} />
+    ).toBlob();
+
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  };
 
   // Grouped UI States
   const [showReleasedOrderForm, setShowReleasedOrderForm] = useState(false);
@@ -184,7 +193,6 @@ const ROAndQFGeneration = () => {
       "scheme",
       "position",
       "hui",
-      "remark",
       "dateOfInsertion",
     ];
     const isComplete = commonDetails.every((detail) => formData[detail]);
@@ -422,7 +430,7 @@ const ROAndQFGeneration = () => {
           roWidth: 0,
           qHeight: 0,
           qWidth: 0,
-          roMultiplyBy: 0,
+          roMultiplyBy: 1,
           qMultiplyBy: 0,
           hui: "",
           remark: "",
@@ -504,7 +512,7 @@ const ROAndQFGeneration = () => {
         roWidth: 0,
         qHeight: 0,
         qWidth: 0,
-        roMultiplyBy: 0,
+        roMultiplyBy: 1,
         qMultiplyBy: 0,
         hui: "",
         remark: "",
@@ -1031,7 +1039,7 @@ const ROAndQFGeneration = () => {
               {/* Remark */}
               <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
-                  Remark <span className="text-red-600">*</span>
+                  Remark
                 </label>
                 <input
                   type="text"
@@ -1046,7 +1054,7 @@ const ROAndQFGeneration = () => {
               {/* Code */}
               <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
-                  Code <span className="text-red-600">*</span>
+                  Code
                 </label>
                 <input
                   type="text"
@@ -1244,21 +1252,27 @@ const ROAndQFGeneration = () => {
 
         {(formData.releasedOrderDetailsCompleted ||
           oldOrder.releasedOrderDetailsCompleted) && (
-          <PDFDownloadLink
-            document={
-              <ReleasedOrderPDF orderId={orderId} showRODetails={formData} />
-            }
-            fileName="released_order.pdf"
+          // <PDFDownloadLink
+          //   document={
+          //     <ReleasedOrderPDF orderId={orderId} showRODetails={formData} />
+          //   }
+          //   fileName="released_order.pdf"
+          //   className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-center my-2"
+          // >
+          //   {({ loading }) =>
+          //     loading ? (
+          //       <button disabled>Preparing PDF...</button>
+          //     ) : (
+          //       <button>Download RO</button>
+          //     )
+          //   }
+          // </PDFDownloadLink>
+          <button
+            onClick={() => handlePreviewPDF(orderId, formData)}
             className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-center my-2"
           >
-            {({ loading }) =>
-              loading ? (
-                <button disabled>Preparing PDF...</button>
-              ) : (
-                <button>Download RO</button>
-              )
-            }
-          </PDFDownloadLink>
+            Preview R.O.
+          </button>
         )}
       </div>
 

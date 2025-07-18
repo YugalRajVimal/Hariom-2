@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
 import QuotationPDF from "../QuotationView/QuotationView";
 
 const AllQuotationForm = () => {
@@ -9,6 +9,15 @@ const AllQuotationForm = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedQuotation, setSelectedQuotation] = useState(null);
+
+  const handlePreviewPDF = async (quotation) => {
+    const blob = await pdf(
+      <QuotationPDF showQFDetails={quotation} />
+    ).toBlob();
+
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -250,7 +259,7 @@ const AllQuotationForm = () => {
                   >
                     Show Details
                   </button> */}
-                  <PDFDownloadLink
+                  {/* <PDFDownloadLink
                     document={<QuotationPDF showQFDetails={quotation} />}
                     fileName="quotation.pdf"
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -262,7 +271,13 @@ const AllQuotationForm = () => {
                         <button>Download QF</button>
                       )
                     }
-                  </PDFDownloadLink>
+                  </PDFDownloadLink> */}
+                  <button
+                    onClick={() => handlePreviewPDF(quotation)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
+                  >
+                    Preview Quotation
+                  </button>
                   {/* <button
                     className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
                     onClick={() => handleEditQF(quotation, idx)}

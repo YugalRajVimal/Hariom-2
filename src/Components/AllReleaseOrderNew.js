@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
 import ReleasedOrderPDF from "./ReleasedOrderView/ReleasedOrderView"; // Only keep this one if it's the PDF component
 import InvoicePDF from "./TaxInvoiceView/TaxInvoiceView";
 
@@ -11,6 +11,15 @@ const AllOrders = () => {
   const [dateFilter, setDateFilter] = useState(""); // Added for date filter
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const handlePreviewPDF = async (ro) => {
+    const blob = await pdf(
+      <ReleasedOrderPDF orderId={ro.orderId} showRODetails={ro} />
+    ).toBlob();
+
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  };
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -139,9 +148,9 @@ const AllOrders = () => {
                           <td className="py-2 px-4 border-b">
                             {ro.publicationName}
                           </td>
-                          <td className="py-2 px-4 border-b">₹{ro.roAmount}</td>
+                          <td className="py-2 px-4 border-b">₹{ro.roAmount.toFixed(2)}</td>
                           <td className="py-2 px-4 border-b">
-                            <PDFDownloadLink
+                            {/* <PDFDownloadLink
                               document={
                                 <ReleasedOrderPDF
                                   orderId={ro.orderId}
@@ -154,7 +163,13 @@ const AllOrders = () => {
                               {({ loading }) =>
                                 loading ? "Preparing PDF..." : "Download R.O."
                               }
-                            </PDFDownloadLink>
+                            </PDFDownloadLink> */}
+                            <button
+                              onClick={() => handlePreviewPDF(ro)}
+                              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
+                            >
+                              Preview R.O.
+                            </button>
                           </td>
                         </tr>
                       )

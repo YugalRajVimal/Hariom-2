@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
 import QuotationPDF from "./QuotationView/QuotationView";
 import InvoicePDF from "./TaxInvoiceView/TaxInvoiceView";
 
@@ -11,6 +11,15 @@ const AllBillsNew = () => {
   const [dateFilter, setDateFilter] = useState(""); // Added for date filter
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const handlePreviewPDF = async (q) => {
+    const blob = await pdf(
+      <InvoicePDF allDetails={q} billDetails={q} />
+    ).toBlob();
+
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+  };
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -133,10 +142,10 @@ const AllBillsNew = () => {
                             {q.publicationName}
                           </td>
                           <td className="py-2 px-4 border-b">
-                            ₹{q.roMultiplyBy * q.roHeight * q.roWidth * q.qRate}
+                            ₹{parseFloat(q.billTotalAmount).toFixed(2)}
                           </td>
                           <td className="py-2 px-4 border-b flex flex-col gap-2 justify-center items-center">
-                            <PDFDownloadLink
+                            {/* <PDFDownloadLink
                               document={
                                 <InvoicePDF allDetails={q} billDetails={q} />
                               }
@@ -148,7 +157,13 @@ const AllBillsNew = () => {
                                   ? "Preparing PDF..."
                                   : "Download Tax Invoice"
                               }
-                            </PDFDownloadLink>
+                            </PDFDownloadLink> */}
+                            <button
+                              onClick={() => handlePreviewPDF(q)}
+                              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
+                            >
+                              Preview Invoice
+                            </button>
                           </td>
                         </tr>
                       )

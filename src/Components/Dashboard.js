@@ -44,7 +44,7 @@ const Dashboard = (props) => {
   };
 
   return (
-    <nav className="w-[20%]  pb-6 flex flex-col h-[90vh] overflow-x-hidden hide-scrollbar overflow-y-auto sticky top-0 justify-between items-center border-slate-300 border-r-2">
+    <nav className="w-[20%] z-50  pb-6 flex flex-col h-[90vh] overflow-x-hidden hide-scrollbar overflow-y-auto sticky top-0 justify-between items-center border-slate-300 border-r-2">
       <div className="w-full">
         <a href="/">
           <h2 className="text-3xl font-serif tracking-wide font-light font-semibold mb-6 py-4  text-black  border-slate-300 border-b-2 ml-4">
