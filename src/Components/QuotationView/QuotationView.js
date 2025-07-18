@@ -683,7 +683,7 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                 borderRightColor: "black",
               }}
             >
-              {showQFDetails.rate}
+              {new Intl.NumberFormat("en-IN").format(showQFDetails.rate)}
             </Text>
             <Text
               style={{
@@ -719,7 +719,7 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                 borderRightColor: "black",
               }}
             >
-              {Math.ceil(showQFDetails.amount)}
+              {new Intl.NumberFormat("en-IN").format(Math.ceil(showQFDetails.amount))}
             </Text>
           </View>
         </View>
@@ -970,7 +970,7 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                   alignItems: "center",
                 }}
               >
-                <Text> {Math.ceil(parseFloat(showQFDetails.discount))}</Text>
+                <Text> {new Intl.NumberFormat("en-IN").format(Math.ceil(parseFloat(showQFDetails.discount)))}</Text>
               </View>
             </View>
             <View
@@ -1001,7 +1001,7 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                   alignItems: "center",
                 }}
               >
-                <Text> {Math.ceil(parseFloat(showQFDetails.totalAmount))}</Text>
+                <Text> {new Intl.NumberFormat("en-IN").format(Math.ceil(parseFloat(showQFDetails.totalAmount)))}</Text>
               </View>
             </View>
             <View
@@ -1034,10 +1034,10 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
               >
                 <Text>
                   {" "}
-                  {Math.ceil(
+                  {new Intl.NumberFormat("en-IN").format(Math.ceil(
                     parseFloat(showQFDetails.totalAmount) *
                       parseFloat(showQFDetails.percentageOfGST)
-                  )}
+                  ))}
                 </Text>
               </View>
             </View>
@@ -1071,11 +1071,11 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
               >
                 <Text>
                   {" "}
-                  {Math.ceil(
+                  {new Intl.NumberFormat("en-IN").format(Math.ceil(
                     parseFloat(showQFDetails.totalAmount) +
                       parseFloat(showQFDetails.totalAmount) *
                         parseFloat(showQFDetails.percentageOfGST)
-                  )}
+                  ))}
                 </Text>
               </View>
             </View>

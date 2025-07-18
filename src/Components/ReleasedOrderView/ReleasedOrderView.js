@@ -560,7 +560,9 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                 borderRightColor: "black",
               }}
             >
-              {Math.ceil(showRODetails.roAmount)}
+              {new Intl.NumberFormat("en-IN").format(
+                Math.ceil(showRODetails.roAmount)
+              )}
             </Text>
           </View>
         </View>
@@ -683,7 +685,15 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                   alignItems: "center",
                 }}
               >
-                <Text>{Math.ceil(showRODetails.roTotalAmount)}</Text>
+                <Text>
+                  <Text>
+                    {new Intl.NumberFormat("en-IN").format(
+                      Math.ceil(
+                        showRODetails.roAmount - showRODetails.roTotalAmount
+                      )
+                    )}
+                  </Text>
+                </Text>
               </View>
             </View>
             <View
@@ -716,7 +726,9 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               >
                 <Text>
                   {" "}
-                  {Math.ceil(parseFloat(showRODetails.roTotalAmount))}
+                  {new Intl.NumberFormat("en-IN").format(
+                    Math.ceil(parseFloat(showRODetails.roTotalAmount))
+                  )}
                 </Text>
               </View>
             </View>
@@ -750,10 +762,10 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               >
                 <Text>
                   {" "}
-                  {Math.ceil(
+                  {new Intl.NumberFormat("en-IN").format(Math.ceil(
                     parseFloat(showRODetails.roTotalAmount) *
                       (showRODetails.percentageOfGST / 100)
-                  )}
+                  ))}
                 </Text>
               </View>
             </View>
@@ -787,11 +799,11 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               >
                 <Text>
                   {" "}
-                  {Math.ceil(
+                  {new Intl.NumberFormat("en-IN").format(Math.ceil(
                     parseFloat(showRODetails.roTotalAmount) +
                       parseFloat(showRODetails.roTotalAmount) *
                         (showRODetails.percentageOfGST / 100)
-                  )}
+                  ))}
                 </Text>
               </View>
             </View>

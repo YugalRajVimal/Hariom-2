@@ -58,6 +58,12 @@ const ROAndQFGeneration = () => {
     quotationDetailsCompleted: false,
   });
 
+  const [gstAmount, setGSTAmount] = useState(0);
+
+  useEffect(() => {
+    setGSTAmount(formData.roTotalAmount * (formData.percentageOfGST / 100));
+  }, [formData.percentageOfGST, formData.roTotalAmount]);
+
   const handlePreviewPDF = async (orderId, formData) => {
     const blob = await pdf(
       <ReleasedOrderPDF orderId={orderId} showRODetails={formData} />
@@ -973,7 +979,7 @@ const ROAndQFGeneration = () => {
             </div>
             <div className=" flex flex-row gap-6 justify-around">
               {/* Agency Commission 3 */}
-              <div className="flex flex-col w-1/4">
+              <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Agency Commission 3
                 </label>
@@ -988,7 +994,7 @@ const ROAndQFGeneration = () => {
                 />
               </div>
               {/*Total Agency Commissions */}
-              <div className="flex flex-col w-1/4">
+              <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Total Commission
                 </label>
@@ -1003,7 +1009,7 @@ const ROAndQFGeneration = () => {
                 />
               </div>
               {/*Total Agency Commissions */}
-              <div className="flex flex-col w-1/4">
+              <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Total Amount
                 </label>
@@ -1018,7 +1024,7 @@ const ROAndQFGeneration = () => {
                 />
               </div>
               {/*Percentage of GST */}
-              <div className="flex flex-col w-1/4">
+              <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   GST (in %) <span className="text-red-600">*</span>
                 </label>
@@ -1030,6 +1036,20 @@ const ROAndQFGeneration = () => {
                   onChange={handleChange}
                   disabled={roFormDisabled}
                   className="border border-purple-700 rounded-md px-2 py-1 w-full"
+                  required
+                />
+              </div>
+              {/* GST Amount */}
+              <div className="flex flex-col w-1/5">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  GST Amount
+                </label>
+                <input
+                  type="number"
+                  name="gstAmount"
+                  value={gstAmount}
+                  disabled
+                  className="border bg-zinc-200 border-purple-700 rounded-md px-2 py-1 w-full"
                   required
                 />
               </div>
