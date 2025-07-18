@@ -1606,6 +1606,7 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   justifyContent: "flex-end",
                   alignItems: "flex-end",
                   paddingTop: 10,
+                  marginRight:20,
                   width: "100%",
                 }}
               >
