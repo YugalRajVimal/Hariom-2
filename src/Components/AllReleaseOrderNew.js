@@ -12,13 +12,62 @@ const AllOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const handlePreviewPDF = async (ro) => {
-    const blob = await pdf(
-      <ReleasedOrderPDF orderId={ro.orderId} showRODetails={ro} />
-    ).toBlob();
+  const uploadFile = async (ro) => {
+    console.log("Starting uploadFile function for release order", ro.orderId);
+    try {
+      const blob = await pdf(
+        <ReleasedOrderPDF orderId={ro.orderId} showRODetails={ro} />
+      ).toBlob();
+      console.log("Blob created for release order", ro.orderId);
+      const formData = new FormData();
+      const customName = `release-order-${ro.orderId}.pdf`;
+      formData.append("file", blob, customName);
+      console.log("FormData prepared for release order", ro.orderId);
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/upload-release-order`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      console.log("Fetch completed for release order", ro.orderId);
+      const data = await res.json();
+      console.log("Data received for release order", ro.orderId, data);
+      return data;
+    } catch (error) {
+      console.error(
+        "Error occurred while uploading file for release order",
+        ro.orderId,
+        error
+      );
+    }
+  };
 
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank");
+  const previewFile = async (data) => {
+    console.log("Starting previewFile function for file", data.fileName);
+    try {
+      const previewUrl = `${process.env.REACT_APP_API_URL}/release-order/${data.fileName}`;
+      console.log("Preview URL generated for file", data.fileName, previewUrl);
+      window.open(previewUrl, "_blank");
+      console.log("File preview opened for file", data.fileName);
+    } catch (error) {
+      console.error(
+        "Error occurred while previewing file",
+        data.fileName,
+        error
+      );
+    }
+  };
+
+  const handlePreviewPDF = async (ro) => {
+    console.log(
+      "Starting handlePreviewPDF function for release order",
+      ro.orderId
+    );
+    const data = await uploadFile(ro);
+    console.log("PDF file uploaded for release order", ro.orderId, data);
+    await previewFile(data);
+    console.log("PDF file previewed for release order", ro.orderId);
   };
 
   const handleSearch = (e) => {
@@ -148,7 +197,9 @@ const AllOrders = () => {
                           <td className="py-2 px-4 border-b">
                             {ro.publicationName}
                           </td>
-                          <td className="py-2 px-4 border-b">₹{ro.roAmount.toFixed(2)}</td>
+                          <td className="py-2 px-4 border-b">
+                            ₹{ro.roAmount.toFixed(2)}
+                          </td>
                           <td className="py-2 px-4 border-b">
                             {/* <PDFDownloadLink
                               document={

@@ -12,13 +12,42 @@ const AllBillsNew = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const handlePreviewPDF = async (q) => {
-    const blob = await pdf(
-      <InvoicePDF allDetails={q} billDetails={q} />
-    ).toBlob();
+  const uploadFile = async (q) => {
+    try {
+      const blob = await pdf(
+        <InvoicePDF allDetails={q} billDetails={q} />
+      ).toBlob();
+      const formData = new FormData();
+      const customName = `invoice-${q.orderId}.pdf`;
+      formData.append("file", blob, customName);
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/upload-invoice`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error("Error occurred while uploading file", error);
+    }
+  };
 
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank");
+  const previewFile = async (data) => {
+    try {
+      const previewUrl = `${process.env.REACT_APP_API_URL}/invoice/${data.fileName}`;
+      window.open(previewUrl, "_blank");
+    } catch (error) {
+      console.error("Error occurred while previewing file", error);
+    }
+  };
+
+  const handlePreviewPDF = async (q) => {
+    console.log("Starting handlePreviewPDF function");
+    const data = await uploadFile(q);
+    console.log("PDF file uploaded", data);
+    await previewFile(data);
   };
 
   const handleSearch = (e) => {

@@ -10,13 +10,49 @@ const AllQuotationForm = () => {
   const [error, setError] = useState("");
   const [selectedQuotation, setSelectedQuotation] = useState(null);
 
-  const handlePreviewPDF = async (quotation) => {
-    const blob = await pdf(
-      <QuotationPDF showQFDetails={quotation} />
-    ).toBlob();
+  const uploadFile = async (quotation) => {
+    try {
+      const blob = await pdf(
+        <QuotationPDF showQFDetails={quotation} />
+      ).toBlob();
 
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank");
+      const formData = new FormData();
+      const customName = `quotation-${quotation.quotationFormNumber}.pdf`;
+      formData.append("file", blob, customName);
+
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/upload-quotation`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+
+      return data;
+    } catch (error) {
+      console.log(
+        "Error occurred while uploading file for quotation",
+        quotation.orderId,
+        error
+      );
+    }
+  };
+
+  const previewFile = async (data) => {
+    try {
+      const previewUrl = `${process.env.REACT_APP_API_URL}/quotation/${data.fileName}`;
+      window.open(previewUrl, "_blank");
+    } catch (error) {
+      console.log("Error occurred while previewing file", data.fileName, error);
+    }
+  };
+
+  const handlePreviewPDF = async (quotation) => {
+    const data = await uploadFile(quotation);
+
+    await previewFile(data);
   };
 
   useEffect(() => {
