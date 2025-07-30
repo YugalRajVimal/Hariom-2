@@ -64,13 +64,62 @@ const ROAndQFGeneration = () => {
     setGSTAmount(formData.roTotalAmount * (formData.percentageOfGST / 100));
   }, [formData.percentageOfGST, formData.roTotalAmount]);
 
-  const handlePreviewPDF = async (orderId, formData) => {
-    const blob = await pdf(
-      <ReleasedOrderPDF orderId={orderId} showRODetails={formData} />
-    ).toBlob();
+  const uploadFile = async (ro) => {
+    console.log("Starting uploadFile function for release order", ro.orderId);
+    try {
+      const blob = await pdf(
+        <ReleasedOrderPDF orderId={ro.orderId} showRODetails={ro} />
+      ).toBlob();
+      console.log("Blob created for release order", ro.orderId);
+      const formData = new FormData();
+      const customName = `RO.No.${ro.orderId}.pdf`;
+      formData.append("file", blob, customName);
+      console.log("FormData prepared for release order", ro.orderId);
+      const res = await fetch(
+        `${process.env.REACT_APP_API_URL}/upload-release-order`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      console.log("Fetch completed for release order", ro.orderId);
+      const data = await res.json();
+      console.log("Data received for release order", ro.orderId, data);
+      return data;
+    } catch (error) {
+      console.error(
+        "Error occurred while uploading file for release order",
+        ro.orderId,
+        error
+      );
+    }
+  };
 
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank");
+  const previewFile = async (data) => {
+    console.log("Starting previewFile function for file", data.fileName);
+    try {
+      const previewUrl = `${process.env.REACT_APP_API_URL}/release-order/${data.fileName}`;
+      console.log("Preview URL generated for file", data.fileName, previewUrl);
+      window.open(previewUrl, "_blank");
+      console.log("File preview opened for file", data.fileName);
+    } catch (error) {
+      console.error(
+        "Error occurred while previewing file",
+        data.fileName,
+        error
+      );
+    }
+  };
+
+  const handlePreviewPDF = async (orderId, formData) => {
+    console.log(
+      "Starting handlePreviewPDF function for release order",
+      orderId
+    );
+    const data = await uploadFile(formData);
+    console.log("PDF file uploaded for release order", orderId, data);
+    await previewFile(data);
+    console.log("PDF file previewed for release order", orderId);
   };
 
   // Grouped UI States
@@ -743,10 +792,9 @@ const ROAndQFGeneration = () => {
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Date of Insertion <span className="text-red-600">*</span>
                 </label>
-                <input
-                  type="date"
+                <textarea
                   name="dateOfInsertion"
-                  value={formatDate(formData.dateOfInsertion)}
+                  value={formData.dateOfInsertion}
                   onChange={handleChange}
                   className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   disabled={commonFormDisabled}
@@ -1057,7 +1105,7 @@ const ROAndQFGeneration = () => {
 
             <div className=" flex flex-row gap-6 justify-around">
               {/* Remark */}
-              <div className="flex flex-col w-1/5">
+              <div className="flex flex-col w-1/4">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Remark
                 </label>
@@ -1072,7 +1120,7 @@ const ROAndQFGeneration = () => {
                 />
               </div>
               {/* Code */}
-              <div className="flex flex-col w-1/5">
+              <div className="flex flex-col w-1/4">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Code
                 </label>
@@ -1086,24 +1134,8 @@ const ROAndQFGeneration = () => {
                 />
               </div>
 
-              {/* Date of Insertion */}
-              <div className="flex flex-col w-1/5">
-                <label className="whitespace-nowrap mb-1 font-xl text-left">
-                  Date of Insertion <span className="text-red-600">*</span>
-                </label>
-                <input
-                  type="date"
-                  name="dateOfInsertion"
-                  value={formatDate(formData.dateOfInsertion)}
-                  onChange={handleChange}
-                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  disabled={commonFormDisabled}
-                  required
-                />
-              </div>
-
               {/* Agency Code */}
-              <div className="flex flex-col w-1/5">
+              <div className="flex flex-col w-1/4">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Agency Code
                 </label>
@@ -1117,7 +1149,7 @@ const ROAndQFGeneration = () => {
                 />
               </div>
               {/* Date */}
-              <div className="flex flex-col w-1/5">
+              <div className="flex flex-col w-1/4">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Date
                 </label>

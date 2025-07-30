@@ -239,9 +239,9 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               label1: "Publication Name",
               value1: showRODetails.publicationName,
               label2: "Date",
-              value2: `${new Date(showRODetails.dateOfInsertion).getDate()}/${
-                new Date(showRODetails.dateOfInsertion).getMonth() + 1
-              }/${new Date(showRODetails.dateOfInsertion).getFullYear()}`,
+              value2: `${new Date(showRODetails.roDate).getDate()}/${
+                new Date(showRODetails.roDate).getMonth() + 1
+              }/${new Date(showRODetails.roDate).getFullYear()}`,
             },
             {
               label1: "Agency Code",
@@ -498,9 +498,10 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                 borderRightColor: "black",
               }}
             >
-              {new Date(showRODetails.dateOfInsertion).getDate()}/
+              {/* {new Date(showRODetails.dateOfInsertion).getDate()}/
               {new Date(showRODetails.dateOfInsertion).getMonth() + 1}/
-              {new Date(showRODetails.dateOfInsertion).getFullYear()}
+              {new Date(showRODetails.dateOfInsertion).getFullYear()} */}
+              {showRODetails.dateOfInsertion}
             </Text>
             <Text
               style={{

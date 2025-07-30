@@ -459,11 +459,9 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
               </Text>
               <Text style={{ fontSize: 10, paddingLeft: 4 }}>
                 DOI :{" "}
-                {allDetails.dateOfInsertion
-                  ? `${new Date(allDetails.dateOfInsertion).getDate()}/${
-                      new Date(allDetails.dateOfInsertion).getMonth() + 1
-                    }/${new Date(allDetails.dateOfInsertion).getFullYear()}`
-                  : ""}
+                {allDetails.dateOfInsertion.includes(",")
+                  ? allDetails.dateOfInsertion
+                  : allDetails.dateOfInsertion.split(" ").join(", ")}
               </Text>
               {/* <Text style={{ fontSize: 10, paddingLeft: 4 }}>
                 Remark : {allDetails.remark}
@@ -697,7 +695,9 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   padding: "1.5px",
                 }}
               >
-                {new Intl.NumberFormat('en-IN').format(Number(allDetails.billAmount).toFixed(2))}
+                {new Intl.NumberFormat("en-IN").format(
+                  Number(allDetails.billAmount).toFixed(2)
+                )}
               </Text>
               <View
                 style={{
@@ -717,7 +717,9 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                     padding: "1.5px",
                   }}
                 >
-                  {new Intl.NumberFormat('en-IN').format(Number(allDetails.discount).toFixed(2))}
+                  {new Intl.NumberFormat("en-IN").format(
+                    Number(allDetails.discount).toFixed(2)
+                  )}
                 </Text>
                 <Text
                   style={{
@@ -731,10 +733,12 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   }}
                 >
                   <Text>
-                    {new Intl.NumberFormat('en-IN').format((
-                      Number(allDetails.billAmount) -
-                      Number(allDetails.discount)
-                    ).toFixed(2))}
+                    {new Intl.NumberFormat("en-IN").format(
+                      (
+                        Number(allDetails.billAmount) -
+                        Number(allDetails.discount)
+                      ).toFixed(2)
+                    )}
                   </Text>
                 </Text>
                 <Text
@@ -749,17 +753,21 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   }}
                 >
                   {allDetails.typeOfGST == "CGST+SGST" &&
-                    `${new Intl.NumberFormat('en-IN').format((
-                      ((Number(allDetails.billAmount) - allDetails.discount) *
-                        (allDetails.percentageOfGST * 2)) /
-                      100
-                    ).toFixed(2))}`}
+                    `${new Intl.NumberFormat("en-IN").format(
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                          (allDetails.percentageOfGST * 2)) /
+                        100
+                      ).toFixed(2)
+                    )}`}
                   {allDetails.typeOfGST == "IGST" &&
-                    `${new Intl.NumberFormat('en-IN').format((
-                      ((Number(allDetails.billAmount) - allDetails.discount) *
-                        allDetails.percentageOfGST) /
-                      100
-                    ).toFixed(2))}`}
+                    `${new Intl.NumberFormat("en-IN").format(
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                          allDetails.percentageOfGST) /
+                        100
+                      ).toFixed(2)
+                    )}`}
                 </Text>
                 <Text
                   style={{
@@ -782,7 +790,9 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                         allDetails.discount * allDetails.percentageOfGST) /
                         100
                   )} */}
-                  {`${new Intl.NumberFormat('en-IN').format(Math.ceil(Number(allDetails.billTotalAmount)))}`}
+                  {`${new Intl.NumberFormat("en-IN").format(
+                    Math.ceil(Number(allDetails.billTotalAmount))
+                  )}`}
                 </Text>
               </View>
             </View>
@@ -985,9 +995,11 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 }}
               >
                 <Text>
-                  {new Intl.NumberFormat('en-IN').format((
-                    Number(allDetails.billAmount) - allDetails.discount
-                  ).toFixed(2))}
+                  {new Intl.NumberFormat("en-IN").format(
+                    (
+                      Number(allDetails.billAmount) - allDetails.discount
+                    ).toFixed(2)
+                  )}
                 </Text>
               </View>{" "}
               <View
@@ -1000,9 +1012,11 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 }}
               >
                 <Text>
-                  {new Intl.NumberFormat('en-IN').format((
-                    Number(allDetails.billAmount) - allDetails.discount
-                  ).toFixed(2))}
+                  {new Intl.NumberFormat("en-IN").format(
+                    (
+                      Number(allDetails.billAmount) - allDetails.discount
+                    ).toFixed(2)
+                  )}
                 </Text>
               </View>
             </View>
@@ -1085,11 +1099,13 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   }}
                 >
                   <Text>
-                    {new Intl.NumberFormat('en-IN').format((
-                      ((Number(allDetails.billAmount) - allDetails.discount) *
-                        allDetails.percentageOfGST) /
-                      100
-                    ).toFixed(2))}
+                    {new Intl.NumberFormat("en-IN").format(
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                          allDetails.percentageOfGST) /
+                        100
+                      ).toFixed(2)
+                    )}
                   </Text>
                 </View>
               </View>
@@ -1121,11 +1137,13 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   }}
                 >
                   <Text>
-                    {new Intl.NumberFormat('en-IN').format((
-                      ((Number(allDetails.billAmount) - allDetails.discount) *
-                        allDetails.percentageOfGST) /
-                      100
-                    ).toFixed(2))}
+                    {new Intl.NumberFormat("en-IN").format(
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                          allDetails.percentageOfGST) /
+                        100
+                      ).toFixed(2)
+                    )}
                   </Text>
                 </View>
               </View>
@@ -1211,11 +1229,14 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 >
                   {allDetails.typeOfGST == "CGST+SGST" && (
                     <Text>
-                      {new Intl.NumberFormat('en-IN').format((
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
-                          allDetails.percentageOfGST) /
-                        100
-                      ).toFixed(2))}
+                      {new Intl.NumberFormat("en-IN").format(
+                        (
+                          ((Number(allDetails.billAmount) -
+                            allDetails.discount) *
+                            allDetails.percentageOfGST) /
+                          100
+                        ).toFixed(2)
+                      )}
                     </Text>
                   )}
                   {allDetails.typeOfGST == "IGST" && <Text></Text>}
@@ -1250,11 +1271,14 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 >
                   {allDetails.typeOfGST == "CGST+SGST" && (
                     <Text>
-                      {new Intl.NumberFormat('en-IN').format((
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
-                          allDetails.percentageOfGST) /
-                        100
-                      ).toFixed(2))}
+                      {new Intl.NumberFormat("en-IN").format(
+                        (
+                          ((Number(allDetails.billAmount) -
+                            allDetails.discount) *
+                            allDetails.percentageOfGST) /
+                          100
+                        ).toFixed(2)
+                      )}
                     </Text>
                   )}
                   {allDetails.typeOfGST == "IGST" && <Text></Text>}
@@ -1289,20 +1313,24 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
               >
                 {allDetails.typeOfGST == "CGST+SGST" && (
                   <Text>
-                    {new Intl.NumberFormat('en-IN').format((
-                      ((Number(allDetails.billAmount) - allDetails.discount) *
-                        (allDetails.percentageOfGST * 2)) /
-                      100
-                    ).toFixed(2))}
+                    {new Intl.NumberFormat("en-IN").format(
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                          (allDetails.percentageOfGST * 2)) /
+                        100
+                      ).toFixed(2)
+                    )}
                   </Text>
                 )}
                 {allDetails.typeOfGST == "IGST" && (
                   <Text>
-                    {new Intl.NumberFormat('en-IN').format((
-                      ((Number(allDetails.billAmount) - allDetails.discount) *
-                        allDetails.percentageOfGST) /
-                      100
-                    ).toFixed(2))}
+                    {new Intl.NumberFormat("en-IN").format(
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                          allDetails.percentageOfGST) /
+                        100
+                      ).toFixed(2)
+                    )}
                   </Text>
                 )}
               </View>{" "}
@@ -1317,20 +1345,24 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
               >
                 {allDetails.typeOfGST == "CGST+SGST" && (
                   <Text>
-                    {new Intl.NumberFormat('en-IN').format((
-                      ((Number(allDetails.billAmount) - allDetails.discount) *
-                        (allDetails.percentageOfGST * 2)) /
-                      100
-                    ).toFixed(2))}
+                    {new Intl.NumberFormat("en-IN").format(
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                          (allDetails.percentageOfGST * 2)) /
+                        100
+                      ).toFixed(2)
+                    )}
                   </Text>
                 )}
                 {allDetails.typeOfGST == "IGST" && (
                   <Text>
-                    {new Intl.NumberFormat('en-IN').format((
-                      ((Number(allDetails.billAmount) - allDetails.discount) *
-                        allDetails.percentageOfGST) /
-                      100
-                    ).toFixed(2))}
+                    {new Intl.NumberFormat("en-IN").format(
+                      (
+                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                          allDetails.percentageOfGST) /
+                        100
+                      ).toFixed(2)
+                    )}
                   </Text>
                 )}
               </View>
@@ -1606,7 +1638,7 @@ const InvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   justifyContent: "flex-end",
                   alignItems: "flex-end",
                   paddingTop: 10,
-                  marginRight:20,
+                  marginRight: 20,
                   width: "100%",
                 }}
               >

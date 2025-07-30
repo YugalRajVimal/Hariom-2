@@ -20,7 +20,7 @@ const AllOrders = () => {
       ).toBlob();
       console.log("Blob created for release order", ro.orderId);
       const formData = new FormData();
-      const customName = `release-order-${ro.orderId}.pdf`;
+      const customName = `RO.No.${ro.orderId}.pdf`;
       formData.append("file", blob, customName);
       console.log("FormData prepared for release order", ro.orderId);
       const res = await fetch(

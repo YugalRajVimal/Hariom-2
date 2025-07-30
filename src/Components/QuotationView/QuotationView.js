@@ -657,9 +657,7 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                 borderRightColor: "black",
               }}
             >
-              {new Date(showQFDetails.dateOfInsertion).getDate()}/
-              {new Date(showQFDetails.dateOfInsertion).getMonth() + 1}/
-              {new Date(showQFDetails.dateOfInsertion).getFullYear()}
+              {showQFDetails.dateOfInsertion}
             </Text>
             <Text
               style={{
@@ -719,7 +717,9 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                 borderRightColor: "black",
               }}
             >
-              {new Intl.NumberFormat("en-IN").format(Math.ceil(showQFDetails.amount))}
+              {new Intl.NumberFormat("en-IN").format(
+                Math.ceil(showQFDetails.amount)
+              )}
             </Text>
           </View>
         </View>
@@ -970,7 +970,12 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                   alignItems: "center",
                 }}
               >
-                <Text> {new Intl.NumberFormat("en-IN").format(Math.ceil(parseFloat(showQFDetails.discount)))}</Text>
+                <Text>
+                  {" "}
+                  {new Intl.NumberFormat("en-IN").format(
+                    Math.ceil(parseFloat(showQFDetails.discount))
+                  )}
+                </Text>
               </View>
             </View>
             <View
@@ -1001,7 +1006,12 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                   alignItems: "center",
                 }}
               >
-                <Text> {new Intl.NumberFormat("en-IN").format(Math.ceil(parseFloat(showQFDetails.totalAmount)))}</Text>
+                <Text>
+                  {" "}
+                  {new Intl.NumberFormat("en-IN").format(
+                    Math.ceil(parseFloat(showQFDetails.totalAmount))
+                  )}
+                </Text>
               </View>
             </View>
             <View
@@ -1034,10 +1044,12 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
               >
                 <Text>
                   {" "}
-                  {new Intl.NumberFormat("en-IN").format(Math.ceil(
-                    parseFloat(showQFDetails.totalAmount) *
-                      parseFloat(showQFDetails.percentageOfGST)
-                  ))}
+                  {new Intl.NumberFormat("en-IN").format(
+                    Math.ceil(
+                      parseFloat(showQFDetails.totalAmount) *
+                        parseFloat(showQFDetails.percentageOfGST)
+                    )
+                  )}
                 </Text>
               </View>
             </View>
@@ -1071,11 +1083,13 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
               >
                 <Text>
                   {" "}
-                  {new Intl.NumberFormat("en-IN").format(Math.ceil(
-                    parseFloat(showQFDetails.totalAmount) +
-                      parseFloat(showQFDetails.totalAmount) *
-                        parseFloat(showQFDetails.percentageOfGST)
-                  ))}
+                  {new Intl.NumberFormat("en-IN").format(
+                    Math.ceil(
+                      parseFloat(showQFDetails.totalAmount) +
+                        parseFloat(showQFDetails.totalAmount) *
+                          parseFloat(showQFDetails.percentageOfGST)
+                    )
+                  )}
                 </Text>
               </View>
             </View>

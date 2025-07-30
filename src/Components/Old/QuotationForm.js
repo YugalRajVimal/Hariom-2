@@ -253,8 +253,7 @@ const QuotationForm = () => {
             <label className="mb-1 font-medium">
               Date of Insertion <span className="text-red-600">*</span>
             </label>
-            <input
-              type="date"
+            <textarea
               name="dateOfInsertion"
               value={formData.dateOfInsertion}
               onChange={handleChange}
@@ -312,9 +311,7 @@ const QuotationForm = () => {
 
           {/* Cust. Id  */}
           <div className="flex flex-col w-1/4">
-            <label className="mb-1 font-medium">
-              Customer ID
-            </label>
+            <label className="mb-1 font-medium">Customer ID</label>
             <input
               type="text"
               name="customerId"
