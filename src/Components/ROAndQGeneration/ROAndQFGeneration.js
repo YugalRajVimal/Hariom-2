@@ -59,22 +59,30 @@ const ROAndQFGeneration = () => {
   });
 
   const [gstAmount, setGSTAmount] = useState(0);
+  const [netAmount, setNetAmount] = useState(0);
 
   useEffect(() => {
     setGSTAmount(formData.roTotalAmount * (formData.percentageOfGST / 100));
   }, [formData.percentageOfGST, formData.roTotalAmount]);
 
-  const uploadFile = async (ro) => {
-    console.log("Starting uploadFile function for release order", ro.orderId);
+  useEffect(() => {
+    setNetAmount(
+      formData.roTotalAmount +
+        formData.roTotalAmount * (formData.percentageOfGST / 100)
+    );
+  }, [formData.percentageOfGST, formData.roTotalAmount]);
+
+  const uploadFile = async (orderId, ro) => {
+    console.log("Starting uploadFile function for release order", orderId);
     try {
       const blob = await pdf(
-        <ReleasedOrderPDF orderId={ro.orderId} showRODetails={ro} />
+        <ReleasedOrderPDF orderId={orderId} showRODetails={ro} />
       ).toBlob();
-      console.log("Blob created for release order", ro.orderId);
+      console.log("Blob created for release order", orderId);
       const formData = new FormData();
-      const customName = `RO.No.${ro.orderId}.pdf`;
+      const customName = `RO.No.${orderId}.pdf`;
       formData.append("file", blob, customName);
-      console.log("FormData prepared for release order", ro.orderId);
+      console.log("FormData prepared for release order", orderId);
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/upload-release-order`,
         {
@@ -82,14 +90,14 @@ const ROAndQFGeneration = () => {
           body: formData,
         }
       );
-      console.log("Fetch completed for release order", ro.orderId);
+      console.log("Fetch completed for release order", orderId);
       const data = await res.json();
-      console.log("Data received for release order", ro.orderId, data);
+      console.log("Data received for release order", orderId, data);
       return data;
     } catch (error) {
       console.error(
         "Error occurred while uploading file for release order",
-        ro.orderId,
+        orderId,
         error
       );
     }
@@ -116,7 +124,7 @@ const ROAndQFGeneration = () => {
       "Starting handlePreviewPDF function for release order",
       orderId
     );
-    const data = await uploadFile(formData);
+    const data = await uploadFile(orderId, formData);
     console.log("PDF file uploaded for release order", orderId, data);
     await previewFile(data);
     console.log("PDF file previewed for release order", orderId);
@@ -1104,23 +1112,34 @@ const ROAndQFGeneration = () => {
             </div>
 
             <div className=" flex flex-row gap-6 justify-around">
+              <div className="flex flex-col w-1/5">
+                <label className="whitespace-nowrap mb-1 font-xl text-left">
+                  Net Amount
+                </label>
+                <input
+                  type="number"
+                  name="netAmount"
+                  value={netAmount}
+                  disabled
+                  className="border bg-zinc-200 border-purple-700 rounded-md bg-white  px-2 py-1 w-full"
+                />
+              </div>
               {/* Remark */}
-              <div className="flex flex-col w-1/4">
+              <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Remark
                 </label>
-                <input
-                  type="text"
+                <textarea
                   name="remark"
                   value={formData.remark}
                   onChange={handleChange}
-                  className="border border-purple-700 rounded-md  px-2 py-1 w-full"
+                  className="border border-purple-700 rounded-md px-2 py-1 w-full"
                   disabled={commonFormDisabled}
                   required
                 />
               </div>
               {/* Code */}
-              <div className="flex flex-col w-1/4">
+              <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Code
                 </label>
@@ -1135,7 +1154,7 @@ const ROAndQFGeneration = () => {
               </div>
 
               {/* Agency Code */}
-              <div className="flex flex-col w-1/4">
+              <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Agency Code
                 </label>
@@ -1149,7 +1168,7 @@ const ROAndQFGeneration = () => {
                 />
               </div>
               {/* Date */}
-              <div className="flex flex-col w-1/4">
+              <div className="flex flex-col w-1/5">
                 <label className="whitespace-nowrap mb-1 font-xl text-left">
                   Date
                 </label>
