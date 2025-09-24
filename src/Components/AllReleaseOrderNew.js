@@ -1,8 +1,44 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
-import ReleasedOrderPDF from "./ReleasedOrderView/ReleasedOrderView"; // Only keep this one if it's the PDF component
-import InvoicePDF from "./TaxInvoiceView/TaxInvoiceView";
+// import * as XLSX from "xlsx";
+import * as XLSX from "xlsx-js-style";
+import { saveAs } from "file-saver";
+
+import { pdf } from "@react-pdf/renderer";
+import ReleasedOrderPDF from "./ReleasedOrderView/ReleasedOrderView";
+
+// const AllOrders = () => {
+//   const [allOrders, setAllOrders] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState("");
+
+//   useEffect(() => {
+//     const fetchOrders = async () => {
+//       try {
+//         const token = localStorage.getItem("token");
+//         const response = await axios.get(
+//           `${process.env.REACT_APP_API_URL}/api/get-all-orders`,
+//           {
+//             headers: { Authorization: `${token}` },
+//           }
+//         );
+
+//         setAllOrders(response.data || []);
+//         setLoading(false);
+//       } catch (err) {
+//         console.error(err);
+//         setError("Failed to fetch data.");
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchOrders();
+//   }, []);
+
+//   // 🔽 Excel Download Handler
+
+//   if (loading) return <p>Loading data...</p>;
+//   if (error) return <p>{error}</p>;
 
 const AllOrders = () => {
   const [allOrders, setAllOrders] = useState([]); // Initialized as array
@@ -11,6 +47,10 @@ const AllOrders = () => {
   const [dateFilter, setDateFilter] = useState(""); // Added for date filter
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showDateBox, setShowDateBox] = useState(false);
+
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   const uploadFile = async (ro) => {
     console.log("Starting uploadFile function for release order", ro.orderId);
@@ -105,6 +145,177 @@ const AllOrders = () => {
     fetchOrders();
   }, []);
 
+  const downloadExcel = (orders = allOrders) => {
+    if (!orders || orders.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    // Map orders into flat JSON for Excel
+    const dataForExcel = orders.map((ro) => ({
+      orderId: ro.orderId,
+      publicationName: ro.publicationName,
+      roDate: ro.roDate ? new Date(ro.roDate).toLocaleDateString("en-GB") : "",
+      agencyCode: ro.agencyCode,
+      code: ro.code,
+      hui: ro.hui,
+      orderRefId: ro.orderRefId,
+      category: ro.category,
+      clientName: ro.clientName,
+      dateOfInsertion: ro.dateOfInsertion,
+      position: ro.position,
+      roRate: ro.roRate,
+      roWidth: ro.roWidth,
+      roHeight: ro.roHeight,
+      scheme: ro.scheme,
+      roAmount: ro.roAmount,
+      remark: ro.remark,
+      agencyCommission1: ro.agencyCommission1,
+      agencyCommission2: ro.agencyCommission2,
+      agencyCommission3: ro.agencyCommission3,
+      roTotalAmount: ro.roTotalAmount,
+      percentageOfGST: ro.percentageOfGST,
+    }));
+
+    const headers = Object.keys(dataForExcel[0]);
+
+    // Build sheet data: header row + data rows
+    const sheetData = [
+      headers,
+      ...dataForExcel.map((row) => headers.map((h) => row[h] ?? "")),
+    ];
+
+    // Create worksheet from array-of-arrays so we control header row
+    const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+    // Auto-adjust column widths (with min & max caps)
+    worksheet["!cols"] = headers.map((header) => {
+      const maxLen = Math.max(
+        header.length,
+        ...dataForExcel.map((r) =>
+          r[header] !== undefined && r[header] !== null
+            ? r[header].toString().length
+            : 0
+        )
+      );
+      const wch = Math.min(Math.max(maxLen + 2, 10), 50); // min 10, max 50
+      return { wch };
+    });
+
+    // Which keys are numeric (right-align these)
+    const numericKeys = new Set([
+      "roRate",
+      "roWidth",
+      "roHeight",
+      "roAmount",
+      "agencyCommission1",
+      "agencyCommission2",
+      "agencyCommission3",
+      "roTotalAmount",
+      "percentageOfGST",
+    ]);
+
+    // Apply styles row-by-row
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+        const cell = worksheet[cellRef];
+        if (!cell) continue;
+
+        // Header row
+        if (R === 0) {
+          cell.s = {
+            font: { name: "Calibri", sz: 12, bold: true },
+            alignment: {
+              horizontal: "center",
+              vertical: "center",
+              wrapText: true,
+            },
+            fill: { patternType: "solid", fgColor: { rgb: "FFE2E8F0" } }, // ARGB (FF + hex)
+          };
+        } else {
+          const headerForCol = headers[C];
+          const isNumeric = numericKeys.has(headerForCol);
+
+          cell.s = {
+            font: { name: "Calibri", sz: 10 },
+            alignment: {
+              horizontal: isNumeric ? "right" : "center",
+              vertical: "center",
+              wrapText: true,
+            },
+          };
+
+          // Ensure numeric cells are typed as numbers when possible
+          const raw = dataForExcel[R - 1][headerForCol]; // R-1 because first data row maps to R=1
+          if (isNumeric && raw !== null && raw !== undefined && raw !== "") {
+            const num = Number(raw);
+            if (!Number.isNaN(num)) {
+              cell.t = "n";
+              cell.v = num;
+            }
+          }
+        }
+      }
+    }
+
+    // Create workbook and append worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "ReleasedOrders");
+
+    // Write and save
+    const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    saveAs(
+      new Blob([wbout], { type: "application/octet-stream" }),
+      "ReleasedOrders.xlsx"
+    );
+  };
+
+  const handleDownloadByDateRange = () => {
+    console.log("handleDownloadByDateRange called.");
+    console.log("From Date:", fromDate);
+    console.log("To Date:", toDate);
+
+    if (!fromDate || !toDate) {
+      alert("Please select both From Date and To Date");
+      console.log("Validation failed: From Date or To Date is missing.");
+      return;
+    }
+
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    console.log("Parsed 'from' date:", from);
+    console.log("Parsed 'to' date:", to);
+
+    // filter orders
+    const filteredOrders = allOrders.filter((order) => {
+      if (!order.roDate) {
+        // console.log("Order skipped: roDate is missing for order", order); // Can be too verbose
+        return false;
+      }
+      const orderDate = new Date(order.roDate);
+      const isWithinRange = orderDate >= from && orderDate <= to;
+      // console.log(`Order ID: ${order.id}, RO Date: ${order.roDate}, Parsed Date: ${orderDate}, Within Range: ${isWithinRange}`); // Can be too verbose
+      return isWithinRange;
+    });
+
+    console.log("Total orders before filtering:", allOrders.length);
+    console.log("Filtered orders count:", filteredOrders.length);
+    console.log("Filtered orders:", filteredOrders);
+
+
+    if (filteredOrders.length === 0) {
+      alert("No orders found in the selected date range");
+      console.log("No orders found after filtering.");
+      return;
+    }
+
+    // pass filteredOrders into downloadExcel
+    console.log("Calling downloadExcel with filtered orders.");
+    downloadExcel(filteredOrders);
+  };
+
   if (loading) return <p>Loading data...</p>;
   if (error) return <p>{error}</p>;
 
@@ -115,7 +326,78 @@ const AllOrders = () => {
       </h4>
 
       <div className="flex flex-col justify-center items-center bg-white rounded-xl mx-10 mb-10 py-6">
-        <h2 className="text-2xl font-bold mb-4">List of All Released Orders</h2>
+        {/* <h2 className="text-2xl font-bold mb-4">List of All Released Orders</h2> */}
+
+        <div className="flex flex-col md:flex-row  justify-between mb-4 w-full">
+          <h2 className="text-2xl font-bold mb-4">
+            List of All Released Orders
+          </h2>
+          <button
+            onClick={() => setShowDateBox(true)}
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Download Excel
+          </button>
+        </div>
+        {showDateBox && (
+          <div className="absolute z-50 top-0 left-0 bg-black/50 h-screen w-screen">
+            <div className="relative h-screen w-screen">
+              <button
+                className="absolute top-4 right-4 text-white text-4xl md:text-7xl font-bold z-50"
+                onClick={() => {
+                  /* TODO: Add logic to close the overlay, e.g., setShowPdfPreview(false) */
+                  setShowDateBox(false);
+                }}
+              >
+                &times;
+              </button>
+              <div className="p-10 md:p-20 bg-white rounded-md absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-4 items-center">
+                <h3 className="text-xl font-semibold mb-2">
+                  Download Excel Sheet
+                </h3>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="fromDate"
+                      className="text-sm font-medium text-gray-700 mb-1"
+                    >
+                      From Date:
+                    </label>
+                    <input
+                      type="date"
+                      id="fromDate"
+                      value={fromDate}
+                      onChange={(e) => setFromDate(e.target.value)}
+                      className="border rounded px-3 py-2"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="toDate"
+                      className="text-sm font-medium text-gray-700 mb-1"
+                    >
+                      To Date:
+                    </label>
+
+                    <input
+                      type="date"
+                      id="toDate"
+                      value={toDate}
+                      onChange={(e) => setToDate(e.target.value)}
+                      className="border rounded px-3 py-2"
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={handleDownloadByDateRange}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded mt-4"
+                >
+                  Download
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="w-full md:w-[95%]">
           <div className="flex gap-4">

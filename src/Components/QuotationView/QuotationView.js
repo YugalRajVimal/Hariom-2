@@ -267,10 +267,6 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
 
             {[
               {
-                label1: "Address",
-                value1: showQFDetails.address,
-              },
-              {
                 label1: "Pincode",
                 value1: showQFDetails.pincode,
               },
@@ -310,7 +306,13 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                     {row.label1}
                   </Text>
                   <Text style={{ fontWeight: "bold", marginRight: 2 }}>:</Text>
-                  <Text>{row.value1}</Text>
+                  <Text
+                    style={{
+                      width: "70%",
+                    }}
+                  >
+                    {row.value1}
+                  </Text>
                 </View>
               </View>
             ))}
@@ -380,7 +382,6 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
                     }/${new Date(showQFDetails.dueDate).getFullYear()}`
                   : "",
               },
-              {},
             ].map((row, index) => (
               <View
                 key={index}
@@ -572,6 +573,55 @@ const QuotationPDF = ({ showQFDetails = {} }) => (
               </View>
             </View>
           </View> */}
+        </View>
+        <View style={{ flexDirection: "column", width: "100%" }}>
+          {[
+            {
+              label1: "Address",
+              value1: showQFDetails.address,
+            },
+          ].map((row, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                paddingVertical: 6,
+                borderTopWidth: 1,
+                borderColor: "black",
+                paddingHorizontal: 8,
+              }}
+            >
+              <View style={{ flexDirection: "row", height: "100%" }}>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    width: "90px",
+                    marginRight: 4,
+                  }}
+                >
+                  {row.label1}
+                </Text>
+
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    marginRight: 2,
+                    color: row.label1 ? "black" : "white",
+                  }}
+                >
+                  :
+                </Text>
+                <Text
+                  style={{
+                    width: "90%",
+                  }}
+                >
+                  {row.value1}
+                </Text>
+              </View>
+            </View>
+          ))}
         </View>
 
         {/* Ad Table Section */}

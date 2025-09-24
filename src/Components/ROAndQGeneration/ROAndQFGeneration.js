@@ -1,8 +1,7 @@
 import axios from "axios";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReleasedOrderPDF from "../ReleasedOrderView/ReleasedOrderView";
-import { PDFDownloadLink, pdf } from "@react-pdf/renderer";
-import QuotationPDF from "../QuotationView/QuotationView";
+import { pdf } from "@react-pdf/renderer";
 
 const ROAndQFGeneration = () => {
   const [formData, setFormData] = useState({
@@ -130,22 +129,9 @@ const ROAndQFGeneration = () => {
     console.log("PDF file previewed for release order", orderId);
   };
 
-  // Grouped UI States
-  const [showReleasedOrderForm, setShowReleasedOrderForm] = useState(false);
-  const [showQuotationForm, setShowQuotationForm] = useState(false);
-
-  const [collapseCommonForm, setCollapseCommonForm] = useState(false);
-  const [collapseReleasedOrderForm, setCollapseReleasedOrderForm] =
-    useState(true);
-  const [collapseQuotationForm, setCollapseQuotationForm] = useState(true);
-
   // Editing and Disable States
-  const [commonFormDisabled, setCommonFormDisabled] = useState(false);
   const [roFormDisabled, setRoFormDisabled] = useState(false);
-  const [qFormDisabled, setQFormDisabled] = useState(false);
-  const [commonFormEditing, setCommonFormEditing] = useState(false);
   const [roFormEditing, setRoFormEditing] = useState(false);
-  const [qFormEditing, setQFormEditing] = useState(false);
 
   const generateUniqueId = async () => {
     try {
@@ -171,6 +157,7 @@ const ROAndQFGeneration = () => {
     };
     fetchOrderId();
   }, []);
+
   const [selectedOrderId, setSelectedOrderId] = useState("--");
   const [newOrder, setNewOrder] = useState(true);
   const [oldOrders, setOldOrders] = useState([]);
@@ -247,9 +234,10 @@ const ROAndQFGeneration = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const saveCommonDetails = async () => {
-    // Assuming all common details are required and must be filled
-    const commonDetails = [
+  const handleSaveReleasedOrder = async () => {
+    // Handle Released Order submit here
+    const roDetails = [
+      //common
       "publicationName",
       "clientName",
       "noOfAds",
@@ -257,46 +245,7 @@ const ROAndQFGeneration = () => {
       "position",
       "hui",
       "dateOfInsertion",
-    ];
-    const isComplete = commonDetails.every((detail) => formData[detail]);
-    if (isComplete) {
-      setShowReleasedOrderForm(true);
-      setShowQuotationForm(true);
-      setCollapseCommonForm(true);
-      setCommonFormEditing(false);
-      setFormData((prev) => ({
-        ...prev,
-        commonDetailsCompleted: true,
-      }));
-
-      console.log(orderId);
-
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/api/add-all-crq/1`,
-          {
-            orderId,
-            ...formData,
-          },
-          {
-            headers: {
-              Authorization: `${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        return response.data;
-      } catch (error) {
-        console.error("Error in Step 1:", error);
-        throw error;
-      }
-    } else {
-      alert("Please fill all common details before proceeding.");
-    }
-  };
-
-  const handleSaveReleasedOrder = async () => {
-    // Handle Released Order submit here
-    const roDetails = [
+      // ro
       "agencyCode",
       "orderRefId",
       "category",
@@ -311,88 +260,35 @@ const ROAndQFGeneration = () => {
       "roAmount",
       "roTotalAmount",
     ];
-    const isComplete = roDetails.every((detail) => formData[detail]);
-    if (isComplete) {
-      setCollapseReleasedOrderForm(true);
-      setRoFormDisabled(true);
-      setRoFormEditing(false);
-      setFormData((prev) => ({
-        ...prev,
-        releasedOrderDetailsCompleted: true,
-      }));
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/api/add-all-crq/2`,
-          {
-            orderId,
-            ...formData,
+    // const isComplete = roDetails.every((detail) => formData[detail]);
+    // if (isComplete) {
+    setRoFormDisabled(true);
+    setRoFormEditing(false);
+    setFormData((prev) => ({
+      ...prev,
+      releasedOrderDetailsCompleted: true,
+    }));
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/add-all-crq`,
+        {
+          orderId,
+          ...formData,
+        },
+        {
+          headers: {
+            Authorization: `${localStorage.getItem("token")}`,
           },
-          {
-            headers: {
-              Authorization: `${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        return response.data;
-      } catch (error) {
-        console.error("Error in Step 1:", error);
-        throw error;
-      }
-    } else {
-      alert("Please fill all Released Order details before proceeding.");
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error in Step 1:", error);
+      throw error;
     }
-  };
-
-  const handleSaveQuotation = async () => {
-    // Handle Quotation submit here
-    const qDetails = [
-      "address",
-      "qRate",
-      "invoice",
-      "pincode",
-      "customerId",
-      "phone",
-      "dueDate",
-      "referral",
-      "qHeight",
-      "qWidth",
-      "qMultiplyBy",
-      "paymentTerms",
-      "discount",
-      "qDate",
-      "qAmount",
-      "qTotalAmount",
-    ];
-    const isComplete = qDetails.every((detail) => formData[detail]);
-    if (isComplete) {
-      setCollapseQuotationForm(true);
-      setQFormDisabled(true);
-      setQFormEditing(false);
-      setFormData((prev) => ({
-        ...prev,
-        quotationDetailsCompleted: true,
-      }));
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/api/add-all-crq/3`,
-          {
-            orderId,
-            ...formData,
-          },
-          {
-            headers: {
-              Authorization: `${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        return response.data;
-      } catch (error) {
-        console.error("Error in Step 1:", error);
-        throw error;
-      }
-    } else {
-      alert("Please fill all Released Order details before proceeding.");
-    }
+    // } else {
+    //   alert("Please fill all Released Order details before proceeding.");
+    // }
   };
 
   // Calculations
@@ -484,7 +380,6 @@ const ROAndQFGeneration = () => {
         setNewOrder(true);
         setFormData({
           publicationName: "",
-
           clientName: "",
           noOfAds: 0,
           scheme: "",
@@ -531,16 +426,8 @@ const ROAndQFGeneration = () => {
           setFormData(selectedOrder);
           setOldOrder(selectedOrder);
           setOrderId(selectedOrder.orderId);
-          if (selectedOrder.commonDetailsCompleted) {
-            setCommonFormDisabled(true);
-            setShowReleasedOrderForm(true);
-            setShowQuotationForm(true);
-          }
           if (selectedOrder.releasedOrderDetailsCompleted) {
             setRoFormDisabled(true);
-          }
-          if (selectedOrder.quotationDetailsCompleted) {
-            setQFormDisabled(true);
           }
         }
       }
@@ -554,12 +441,10 @@ const ROAndQFGeneration = () => {
       setOrderId(await generateUniqueId());
       setNewOrder(true);
       setSelectedOrderId("--");
-      setCommonFormDisabled(false);
       setRoFormDisabled(false);
-      setQFormDisabled(false);
-      setCommonFormEditing(true);
       setRoFormEditing(true);
-      setQFormEditing(true);
+      setRoFormEditing(true);
+
       // formData.quotationDetailsCompleted = false;
       // oldOrder.quotationDetailsCompleted = false;
 
@@ -697,10 +582,7 @@ const ROAndQFGeneration = () => {
         </div>
       </div>
       <div>
-        <div
-          // onClick={() => setCollapseCommonForm(!collapseCommonForm)}
-          className="bg-blue-200 px-2 py-1 rounded-t-md transition ease-in-out duration-200 mt-2 mx-12 text-xl text-left font-semibold flex justify-between items-center "
-        >
+        <div className="bg-blue-200 px-2 py-1 rounded-t-md transition ease-in-out duration-200 mt-2 mx-12 text-xl text-left font-semibold flex justify-between items-center ">
           <span>Fill Details</span>
           {/* <span>{collapseCommonForm ? "↓" : "↑"}</span>  */}
         </div>
@@ -732,7 +614,7 @@ const ROAndQFGeneration = () => {
                   value={formData.clientName}
                   onChange={handleClientSearch}
                   className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  disabled={commonFormDisabled}
+                  disabled={roFormDisabled}
                   autoComplete="off"
                   required
                 />
@@ -768,7 +650,7 @@ const ROAndQFGeneration = () => {
                   value={formData.publicationName}
                   onChange={handlePublicationSearch}
                   className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  disabled={commonFormDisabled}
+                  disabled={roFormDisabled}
                   autoComplete="off"
                   required
                 />
@@ -805,7 +687,7 @@ const ROAndQFGeneration = () => {
                   value={formData.dateOfInsertion}
                   onChange={handleChange}
                   className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  disabled={commonFormDisabled}
+                  disabled={roFormDisabled}
                   required
                 />
               </div>
@@ -851,7 +733,7 @@ const ROAndQFGeneration = () => {
                   value={formData.noOfAds}
                   onChange={handleChange}
                   className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  disabled={commonFormDisabled}
+                  disabled={roFormDisabled}
                   required
                 />
               </div>
@@ -884,7 +766,7 @@ const ROAndQFGeneration = () => {
                       value="B/W"
                       checked={formData.hui === "B/W"}
                       onChange={handleChange}
-                      disabled={commonFormDisabled}
+                      disabled={roFormDisabled}
                       className="h-full "
                       required
                     />
@@ -897,7 +779,7 @@ const ROAndQFGeneration = () => {
                       value="Color"
                       checked={formData.hui === "Color"}
                       onChange={handleChange}
-                      disabled={commonFormDisabled}
+                      disabled={roFormDisabled}
                       className="h-full"
                       required
                     />
@@ -917,7 +799,7 @@ const ROAndQFGeneration = () => {
                   value={formData.scheme}
                   onChange={handleChange}
                   className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  disabled={commonFormDisabled}
+                  disabled={roFormDisabled}
                   required
                 />
               </div>
@@ -1134,7 +1016,7 @@ const ROAndQFGeneration = () => {
                   value={formData.remark}
                   onChange={handleChange}
                   className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  disabled={commonFormDisabled}
+                  disabled={roFormDisabled}
                   required
                 />
               </div>
@@ -1184,12 +1066,6 @@ const ROAndQFGeneration = () => {
               </div>
             </div>
           </div>
-          {/* <button
-            onClick={saveCommonDetails}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-          >
-            Save Common Details
-          </button> */}
         </div>
       </div>
 
@@ -1198,96 +1074,13 @@ const ROAndQFGeneration = () => {
       <div
         className={`flex flex-col justify-center items-center bg-white rounded-b-xl mx-10 `}
       >
-        {/* {oldOrder.commonDetailsCompleted || formData.commonDetailsCompleted ? (
-          <div className="flex gap-4">
-            {commonFormEditing ? (
-              <div>
-                <button
-                  onClick={saveCommonDetails}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-                >
-                  Save Common Details
-                </button>
-              </div>
-            ) : (
-              <div className="flex gap-4">
-                {" "}
-                <button
-                  onClick={() => {
-                    setCommonFormDisabled(false);
-                    setCommonFormEditing(true);
-                  }}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-                >
-                  Edit Common Details
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <button
-            onClick={saveCommonDetails}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-          >
-            Save Common Details
-          </button>
-        )}
-
-        {oldOrder.releasedOrderDetailsCompleted ||
-        formData.releasedOrderDetailsCompleted ? (
-          <div className="flex gap-4">
-            {roFormEditing ? (
-              <div>
-                <button
-                  onClick={() => handleSaveReleasedOrder()}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-                >
-                  Save Release Order
-                </button>
-              </div>
-            ) : (
-              <div className="flex gap-4">
-                {" "}
-                <button
-                  onClick={() => {
-                    setRoFormDisabled(false);
-                    setRoFormEditing(true);
-                  }}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-                >
-                  Edit Released Order Details
-                </button>
-                <button
-                  onClick={() => {
-                    setCollapseReleasedOrderForm(true);
-                    setCollapseCommonForm(false);
-                  }}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-                >
-                  Next
-                </button>{" "}
-              </div>
-            )}
-          </div>
-        ) : (
-          <button
-            onClick={() => handleSaveReleasedOrder()}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-          >
-            Save Release Order
-          </button>
-        )} */}
-
         <div className="flex gap-4">
-          {(oldOrder.commonDetailsCompleted ||
-            formData.commonDetailsCompleted) &&
-          (oldOrder.releasedOrderDetailsCompleted ||
-            formData.releasedOrderDetailsCompleted) ? (
+          {oldOrder.releasedOrderDetailsCompleted ||
+          formData.releasedOrderDetailsCompleted ? (
             <div className="flex gap-4">
-              {commonFormEditing || roFormEditing ? (
+              {roFormEditing || roFormEditing ? (
                 <button
                   onClick={() => {
-                    saveCommonDetails();
                     handleSaveReleasedOrder();
                   }}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-2"
@@ -1297,8 +1090,6 @@ const ROAndQFGeneration = () => {
               ) : (
                 <button
                   onClick={() => {
-                    setCommonFormDisabled(false);
-                    setCommonFormEditing(true);
                     setRoFormDisabled(false);
                     setRoFormEditing(true);
                   }}
@@ -1311,7 +1102,6 @@ const ROAndQFGeneration = () => {
           ) : (
             <button
               onClick={() => {
-                saveCommonDetails();
                 handleSaveReleasedOrder();
               }}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-2"
@@ -1323,21 +1113,6 @@ const ROAndQFGeneration = () => {
 
         {(formData.releasedOrderDetailsCompleted ||
           oldOrder.releasedOrderDetailsCompleted) && (
-          // <PDFDownloadLink
-          //   document={
-          //     <ReleasedOrderPDF orderId={orderId} showRODetails={formData} />
-          //   }
-          //   fileName="released_order.pdf"
-          //   className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-center my-2"
-          // >
-          //   {({ loading }) =>
-          //     loading ? (
-          //       <button disabled>Preparing PDF...</button>
-          //     ) : (
-          //       <button>Download RO</button>
-          //     )
-          //   }
-          // </PDFDownloadLink>
           <button
             onClick={() => handlePreviewPDF(orderId, formData)}
             className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-center my-2"
@@ -1346,330 +1121,6 @@ const ROAndQFGeneration = () => {
           </button>
         )}
       </div>
-
-      {showQuotationForm && (
-        <div>
-          {/* Quotation Form content */}
-          <div
-            onClick={() => setCollapseQuotationForm(!collapseQuotationForm)}
-            className="bg-blue-200 hidden px-2 py-1 rounded-md transition ease-in-out duration-200 mt-6 mx-12 mb-2 text-xl text-left font-semibold flex justify-between items-center "
-          >
-            <span>Quotation Form</span>
-            <span>{collapseQuotationForm ? "↓" : "↑"}</span>
-          </div>
-          <div
-            className={`flex flex-col justify-center items-center bg-white rounded-xl mx-10 py-6 mb-10 ${
-              collapseQuotationForm && "hidden"
-            }`}
-          >
-            <div className="w-full md:w-[90%] flex flex-row gap-6">
-              <div className="flex flex-col w-1/2 gap-6">
-                {/* Address */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    disabled={qFormDisabled}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                {/* Pin Code */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Pin Code
-                  </label>
-                  <input
-                    type="text"
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleChange}
-                    disabled={qFormDisabled}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                {/* Phone */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Phone
-                  </label>
-                  <input
-                    type="text"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    disabled={qFormDisabled}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Height <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    onWheel={(e) => e.target.blur()}
-                    name="qHeight"
-                    value={formData.qHeight}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full h-[90%]"
-                    required
-                  />
-                </div>
-
-                {/* Referral */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Referral
-                  </label>
-                  <input
-                    type="text"
-                    name="referral"
-                    value={formData.referral}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                {/* Payment Terms */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Payment Terms
-                  </label>
-                  <input
-                    type="text"
-                    name="paymentTerms"
-                    value={formData.paymentTerms}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                {/* Date */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Date
-                  </label>
-                  <input
-                    type="date"
-                    name="qDate"
-                    value={formatDate(formData.qDate)}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                {/*Total Agency Commissions */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Amount
-                  </label>
-                  <input
-                    type="number"
-                    onWheel={(e) => e.target.blur()}
-                    name="qAmount"
-                    value={formData.qAmount}
-                    disabled
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col w-1/2 gap-6">
-                {/* Invoice */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Invoice
-                  </label>
-                  <input
-                    type="text"
-                    name="invoice"
-                    value={formData.invoice}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                {/* Customer Id */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Customer ID
-                  </label>
-                  <input
-                    type="text"
-                    name="customerId"
-                    value={formData.customerId}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                {/* Due Date */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Due Date
-                  </label>
-                  <input
-                    type="date"
-                    name="dueDate"
-                    value={formatDate(formData.dueDate)}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Width <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    onWheel={(e) => e.target.blur()}
-                    name="qWidth"
-                    value={formData.qWidth}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full h-[90%]"
-                    required
-                  />
-                </div>
-
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Multiply By <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    onWheel={(e) => e.target.blur()}
-                    name="qMultiplyBy"
-                    value={formData.qMultiplyBy}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full h-[90%]"
-                    required
-                  />
-                </div>
-
-                {/* Rate */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Rate
-                  </label>
-                  <input
-                    type="number"
-                    onWheel={(e) => e.target.blur()}
-                    name="qRate"
-                    value={formData.qRate}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                {/* Discount in % */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Discount
-                  </label>
-                  <input
-                    type="number"
-                    onWheel={(e) => e.target.blur()}
-                    name="discount"
-                    value={formData.discount}
-                    disabled={qFormDisabled}
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-
-                {/*Total Agency Commissions */}
-                <div className="flex flex-col">
-                  <label className="whitespace-nowrap mb-1 font-xl text-left">
-                    Total Amount
-                  </label>
-                  <input
-                    type="number"
-                    onWheel={(e) => e.target.blur()}
-                    name="qTotalAmount"
-                    value={formData.qTotalAmount}
-                    disabled
-                    onChange={handleChange}
-                    className="border border-purple-700 rounded-md px-2 py-1 w-full"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {oldOrder.quotationDetailsCompleted ||
-            formData.quotationDetailsCompleted ? (
-              <div className="flex gap-4">
-                {qFormEditing ? (
-                  <div>
-                    <button
-                      onClick={() => handleSaveQuotation()}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-                    >
-                      Save Quotation
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex gap-4">
-                    {" "}
-                    <button
-                      onClick={() => {
-                        setQFormDisabled(false);
-                        setQFormEditing(true);
-                      }}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-10"
-                    >
-                      Edit Quotation Details
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <button
-                onClick={() => handleSaveQuotation()}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded my-2"
-              >
-                Save Quotation
-              </button>
-            )}
-            {(formData.quotationDetailsCompleted ||
-              oldOrder.quotationDetailsCompleted) && (
-              <PDFDownloadLink
-                document={
-                  <QuotationPDF orderId={orderId} showQFDetails={formData} />
-                }
-                fileName="quotation.pdf"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-center my-2"
-              >
-                {({ loading }) =>
-                  loading ? (
-                    <button disabled>Preparing PDF...</button>
-                  ) : (
-                    <button>Download Quotation</button>
-                  )
-                }
-              </PDFDownloadLink>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

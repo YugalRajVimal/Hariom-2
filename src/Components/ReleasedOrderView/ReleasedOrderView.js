@@ -471,7 +471,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               borderTopWidth: 0,
               borderLeftWidth: 0,
               borderRightWidth: 0,
-              height: "150px",
+              height: "180px",
               fontSize: 11,
               borderColor: "black",
             }}
@@ -860,7 +860,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
                 <Image
                   src="/sign.jpeg"
                   style={{
-                    width: "80%",
+                    width: "75%",
                     aspectRatio: 1,
                     objectFit: "contain",
                     zIndex: 1,
@@ -871,7 +871,7 @@ const ReleasedOrderPDF = ({ orderId, showRODetails = {} }) => (
               <View
                 style={{
                   paddingHorizontal: 10,
-                  paddingVertical: 4,
+                  paddingBottom: 8,
                   flexDirection: "column",
                   alignItems: "center",
                   // marginTop: 50,
