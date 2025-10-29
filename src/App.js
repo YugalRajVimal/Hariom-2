@@ -28,6 +28,8 @@ import AllBillsNew from "./Components/AllBillsNew";
 import AllQuotationForm from "./Components/Old/AllQuotationsOld";
 import UserResetPassword from "./Components/AuthComponents/UserResetPassword";
 import VerifyAccount from "./Components/AuthComponents/UserVerifyAccount";
+import MultiROBillGeneration from "./Components/MultiROsBillGeneration";
+import AllMultiROBillsNew from "./Components/AllMultiROsBill";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState("false");
@@ -104,6 +106,16 @@ function App() {
                     <Route
                       path="/bill-generation"
                       element={<BillGeneration />}
+                    />
+
+                    <Route
+                      path="/multi-ro-bill-generation"
+                      element={<MultiROBillGeneration />}
+                    />
+
+                    <Route
+                      path="/all-multi-ro-bills"
+                      element={<AllMultiROBillsNew />}
                     />
 
                     <Route path="/ro-view" element={<ReleasedOrderPDF />} />

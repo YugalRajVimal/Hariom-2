@@ -147,6 +147,24 @@ const Dashboard = (props) => {
           </li> */}
           <li
             className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
+          ${selectedLink == 5 && "bg-purple-300 h-[65px] w-[92%]"}
+          `}
+          >
+            <div
+              className={`h-5 aspect-[1/1] border-purple-500 border-2 rounded-full ${
+                selectedLink == 5 && "bg-purple-500 border-purple-600"
+              }`}
+            ></div>
+            <Link
+              to="/bill-generation"
+              onClick={() => setSelectedLink(5)}
+              className="text-gray-800 hover:text-purple-600 font-semibold transition-colors"
+            >
+              Bill Generation
+            </Link>
+          </li>
+          <li
+            className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
           ${selectedLink == 4 && "bg-purple-300 h-[65px] w-[92%]"}
           `}
           >
@@ -163,22 +181,41 @@ const Dashboard = (props) => {
               All Bills
             </Link>
           </li>
+
           <li
             className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
-          ${selectedLink == 5 && "bg-purple-300 h-[65px] w-[92%]"}
+          ${selectedLink == 3 && "bg-purple-300 h-[65px] w-[92%]"}
           `}
           >
             <div
               className={`h-5 aspect-[1/1] border-purple-500 border-2 rounded-full ${
-                selectedLink == 5 && "bg-purple-500 border-purple-600"
+                selectedLink == 3 && "bg-purple-500 border-purple-600"
               }`}
             ></div>
             <Link
-              to="/bill-generation"
-              onClick={() => setSelectedLink(5)}
+              to="/multi-ro-bill-generation"
+              onClick={() => setSelectedLink(3)}
               className="text-gray-800 hover:text-purple-600 font-semibold transition-colors"
             >
-              Bill Generation
+              Multi RO's Bill Generation
+            </Link>
+          </li>
+          <li
+            className={`transition ease-in-out duration-200  h-[50px] w-[90%] bg-purple-100 rounded-l-md flex items-center justify-between p-4 shadow-sm border-r-2 border-purple-500 translate-x-[2px]
+          ${selectedLink == 6 && "bg-purple-300 h-[65px] w-[92%]"}
+          `}
+          >
+            <div
+              className={`h-5 aspect-[1/1] border-purple-500 border-2 rounded-full ${
+                selectedLink == 6 && "bg-purple-500 border-purple-600"
+              }`}
+            ></div>
+            <Link
+              to="/all-multi-ro-bills"
+              onClick={() => setSelectedLink(6)}
+              className="text-gray-800 hover:text-purple-600 font-semibold transition-colors"
+            >
+              All Multi RO's Bills
             </Link>
           </li>
         </ul>
