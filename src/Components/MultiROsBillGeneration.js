@@ -1107,7 +1107,7 @@ const MultiROBillGeneration = () => {
         </div>
 
         <div className="flex justify-around w-full gap-4">
-          {/* <div className="w-1/4">
+          <div className="w-1/4">
             <label
               htmlFor="billClientName"
               className="block text-sm font-medium text-gray-700"
@@ -1124,8 +1124,8 @@ const MultiROBillGeneration = () => {
               }
               className="mt-1 w-full px-4 py-2 border border-purple-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div> */}
-          <div className="w-1/4">
+          </div>
+          {/* <div className="w-1/4">
             <label
               htmlFor="billClientName"
               className="block text-sm font-medium text-gray-700"
@@ -1137,10 +1137,10 @@ const MultiROBillGeneration = () => {
               id="billClientName"
               name="billClientName"
               value={formData.billClientName}
-              readOnly
+              
               className="mt-1 w-full px-4 py-2 border border-gray-400 rounded-lg bg-gray-100"
             />
-          </div>
+          </div> */}
           <div className="w-1/4">
             <label
               htmlFor="clientGSTNumber"
