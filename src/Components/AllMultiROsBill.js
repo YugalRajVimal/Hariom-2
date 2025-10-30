@@ -12,13 +12,14 @@ const AllMultiROBillsNew = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const uploadFile = async (q) => {
+  const uploadFile = async (order) => {
     try {
-      const blob = await pdf(
-        <MultiROInvoicePDF allDetails={q} billDetails={q} />
-      ).toBlob();
+      const blob = await pdf(<MultiROInvoicePDF allDetails={order} />).toBlob();
       const formData = new FormData();
-      const customName = `invoice-${q.orderId}.pdf`;
+      const customOrderId = Array.isArray(order.orderIds)
+        ? order.orderIds.join("-")
+        : order.orderIds;
+      const customName = `invoice-${customOrderId}.pdf`;
       formData.append("file", blob, customName);
       const res = await fetch(
         `${process.env.REACT_APP_API_URL}/upload-invoice`,
@@ -43,9 +44,9 @@ const AllMultiROBillsNew = () => {
     }
   };
 
-  const handlePreviewPDF = async (q) => {
+  const handlePreviewPDF = async (order) => {
     console.log("Starting handlePreviewPDF function");
-    const data = await uploadFile(q);
+    const data = await uploadFile(order);
     console.log("PDF file uploaded", data);
     await previewFile(data);
   };
@@ -67,13 +68,14 @@ const AllMultiROBillsNew = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/get-all-orders`,
+          `${process.env.REACT_APP_API_URL}/api/get-all-multi-bill`,
           {
             headers: { Authorization: `${token}` },
           }
         );
 
-        setAllOrders(response.data || []);
+        console.log(response.data);
+        setAllOrders(response.data.data || []);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -101,7 +103,7 @@ const AllMultiROBillsNew = () => {
           <div className="flex gap-4">
             <input
               type="text"
-              placeholder="Search by client name"
+              placeholder="Search by OrderId"
               value={searchTerm}
               onChange={handleSearch}
               className="w-1/2 border rounded px-3 py-2 mb-4"
@@ -129,9 +131,7 @@ const AllMultiROBillsNew = () => {
                 <th className="py-2 px-4 border-b text-left">Date</th>
                 <th className="py-2 px-4 border-b text-left">Order Id</th>
                 <th className="py-2 px-4 border-b text-left">Client Name</th>
-                <th className="py-2 px-4 border-b text-left">
-                  Publication Name
-                </th>
+
                 <th className="py-2 px-4 border-b text-left">Amount</th>
                 <th className="py-2 px-4 border-b text-left">Actions</th>
               </tr>
@@ -140,67 +140,64 @@ const AllMultiROBillsNew = () => {
             <tbody className="text-left">
               {allOrders.length > 0 ? (
                 allOrders
-                  .filter((q) => {
-                    const qDate = q.roDate ? new Date(q.roDate) : null;
-                    const formattedDate =
-                      qDate && !isNaN(qDate)
-                        ? qDate.toISOString().split("T")[0]
-                        : null;
+                  .filter((order) => {
+                    // Filter by OrderId
+                    const orderIdMatch =
+                      searchTerm === "" ||
+                      (Array.isArray(order.orderIds) &&
+                        order.orderIds.some((id) =>
+                          id.toString().includes(searchTerm.trim())
+                        ));
 
-                    return (
-                      q.clientName
-                        ?.toLowerCase()
-                        .includes(searchTerm.toLowerCase()) &&
-                      q.publicationName
-                        ?.toLowerCase()
-                        .includes(publicationSearchTerm.toLowerCase()) &&
-                      (!dateFilter || formattedDate === dateFilter)
-                    );
+                    // Filter by Publication Name
+                    // Filter by Client Name
+                    const clientNameMatch =
+                      publicationSearchTerm === "" ||
+                      order.billClientName
+                        .toLowerCase()
+                        .includes(publicationSearchTerm.toLowerCase());
+
+                    // Filter by Date
+                    const dateMatch =
+                      dateFilter === "" ||
+                      new Date(order.billDate).toISOString().split("T")[0] ===
+                        dateFilter;
+
+                    return orderIdMatch && clientNameMatch && dateMatch;
                   })
-
-                  .map(
-                    (q) =>
-                      q.billDetailsCompleted && (
-                        <tr key={q.orderId} className="hover:bg-purple-50">
-                          <td className="py-2 px-4 border-b">
-                            {new Date(q.roDate).toLocaleDateString()}
-                          </td>
-                          <td className="py-2 px-4 border-b">{q.orderId}</td>
-                          <td className="py-2 px-4 border-b">{q.clientName}</td>
-                          <td className="py-2 px-4 border-b">
-                            {q.publicationName}
-                          </td>
-                          <td className="py-2 px-4 border-b">
-                            ₹{parseFloat(q.billTotalAmount).toFixed(2)}
-                          </td>
-                          <td className="py-2 px-4 border-b flex flex-col gap-2 justify-center items-center">
-                            {/* <PDFDownloadLink
-                              document={
-                                <InvoicePDF allDetails={q} billDetails={q} />
-                              }
-                              fileName="tax-invoice.pdf"
-                              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
-                            >
-                              {({ loading }) =>
-                                loading
-                                  ? "Preparing PDF..."
-                                  : "Download Tax Invoice"
-                              }
-                            </PDFDownloadLink> */}
-                            <button
-                              onClick={() => handlePreviewPDF(q)}
-                              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
-                            >
-                              Preview Invoice
-                            </button>
-                          </td>
-                        </tr>
-                      )
-                  )
+                  .map((order) => (
+                    <tr
+                      key={`${order._id}-${order.orderId}`}
+                      className="hover:bg-purple-50"
+                    >
+                      <td className="py-2 px-4 border-b">
+                        {new Date(order.billDate).toLocaleDateString()}
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        {Array.isArray(order.orderIds)
+                          ? order.orderIds.join(", ")
+                          : order.orderId}
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        {order.billClientName}
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        ₹{parseFloat(order.billTotalAmount).toFixed(2)}
+                      </td>
+                      <td className="py-2 px-4 border-b flex flex-col gap-2 justify-center items-center">
+                        <button
+                          onClick={() => handlePreviewPDF(order)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
+                        >
+                          Preview Invoice
+                        </button>
+                      </td>
+                    </tr>
+                  ))
               ) : (
                 <tr>
                   <td colSpan={6} className="py-4 text-center text-gray-500">
-                    No Quotations found.
+                    No Multi ROs Bills found.
                   </td>
                 </tr>
               )}

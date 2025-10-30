@@ -20,7 +20,7 @@ const convertAmountToWords = (amount) => {
   return `${words} Rupees`;
 };
 
-const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
+const MultiROInvoicePDF = ({ allDetails = {} }) => (
   <Document>
     <Page
       size="A4"
@@ -177,13 +177,13 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
           style={{
             flexDirection: "row",
             borderTop: "1 solid black",
-            height: "320px",
+            height: "640px",
             fontSize: 8,
           }}
         >
           <View
             style={{
-              flex: 2.03,
+              flex: 4.06,
               flexDirection: "column",
               borderRight: "1 solid black",
               width: "50%",
@@ -192,7 +192,7 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
             <View
               style={{
                 flexDirection: "column",
-                flex: 6.1,
+                flex: 3.43,
                 padding: 4,
                 paddingLeft: 4,
               }}
@@ -206,9 +206,7 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   paddingBottom: 4,
                 }}
               >
-                {allDetails.billClientName
-                  ? allDetails.billClientName
-                  : allDetails.clientName}
+                {allDetails.billClientName}
               </Text>
               <Text
                 style={{ fontSize: 10, paddingHorizontal: 4, paddingBottom: 4 }}
@@ -220,7 +218,7 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
             <View
               style={{
                 flexDirection: "row",
-                flex: 1.6,
+                flex: 0.73,
                 width: "100%",
                 borderTop: "1 solid black",
               }}
@@ -258,7 +256,7 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
             <View
               style={{
                 flexDirection: "row",
-                flex: 9.32,
+                flex: 10.15,
                 width: "100%",
                 borderTop: "1 solid black",
               }}
@@ -269,643 +267,617 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   marginRight: 5,
                   borderRight: "1 solid black",
                   padding: 2,
+                  paddingTop: 4,
                   textAlign: "center",
                 }}
               >
-                <Text>1</Text>
+                {Array.isArray(allDetails.orderIds) &&
+                  allDetails.orderIds.map((orderId, idx) => (
+                    <Text
+                      key={orderId}
+                      style={{
+                        height: "70px",
+                      }}
+                    >
+                      {idx + 1}
+                    </Text>
+                  ))}
               </View>
               <View
                 style={{
                   width: "90%",
                   flexDirection: "column",
-                  justifyContent: "space-between",
+                  justifyContent: "start",
+
                   // borderRight: "1 solid black",
                   padding: 2,
                   paddingBottom: 4,
                   textOverflow: "ellipsis",
                 }}
               >
-                <View>
-                  {billDetails.descHeading && (
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        fontWeight: "bold",
-                        paddingHorizontal: 2,
-                      }}
-                      wrap
-                    >
-                      {billDetails.descHeading}
+                {Array.isArray(allDetails.orders) &&
+                allDetails.orders.length > 0 ? (
+                  allDetails.orders.map((order, idx) => (
+                    <View key={idx} style={{ marginBottom: 8 }}>
+                      {allDetails.descHeading && (
+                        <Text
+                          style={{
+                            fontSize: 10,
+                            fontWeight: "bold",
+                            paddingHorizontal: 2,
+                          }}
+                          wrap
+                        >
+                          {allDetails.descHeading}
+                        </Text>
+                      )}
+                      <Text style={{ fontSize: 10, paddingLeft: 4 }} wrap>
+                        PUB : {order.publicationName}
+                      </Text>
+                      <Text style={{ fontSize: 10, paddingLeft: 4 }} wrap>
+                        DOI :{" "}
+                        {order.dateOfInsertion &&
+                        order.dateOfInsertion.includes(",")
+                          ? order.dateOfInsertion
+                          : order.dateOfInsertion
+                          ? order.dateOfInsertion.split(" ").join(", ")
+                          : ""}
+                      </Text>
+                      {/* 
+                      <Text style={{ fontSize: 10, paddingLeft: 4 }}>
+                        Remark : {order.remark}
+                      </Text> 
+                      */}
+                      <Text style={{ fontSize: 10, paddingLeft: 4 }} wrap>
+                        Category : {order.category}
+                      </Text>
+                      {order.amountSummary && (
+                        <Text
+                          style={{ fontSize: 10, paddingHorizontal: 4 }}
+                          wrap
+                        >
+                          Acc. Summary :{allDetails.amountSummary}
+                        </Text>
+                      )}
+                    </View>
+                  ))
+                ) : (
+                  <View>
+                    {allDetails.descHeading && (
+                      <Text
+                        style={{
+                          fontSize: 10,
+                          fontWeight: "bold",
+                          paddingHorizontal: 2,
+                        }}
+                        wrap
+                      >
+                        {allDetails.descHeading}
+                      </Text>
+                    )}
+                    <Text style={{ fontSize: 10, paddingLeft: 4 }} wrap>
+                      PUB : {allDetails.publicationName}
                     </Text>
-                  )}
-                  <Text style={{ fontSize: 10, paddingLeft: 4 }} wrap>
-                    PUB : {allDetails.publicationName}
-                  </Text>
-                  <Text style={{ fontSize: 10, paddingLeft: 4 }} wrap>
-                    DOI :{" "}
-                    {allDetails.dateOfInsertion.includes(",")
-                      ? allDetails.dateOfInsertion
-                      : allDetails.dateOfInsertion.split(" ").join(", ")}
-                  </Text>
-                  {/* <Text style={{ fontSize: 10, paddingLeft: 4 }}>
-                Remark : {allDetails.remark}
-              </Text> */}
-                  <Text style={{ fontSize: 10, paddingLeft: 4 }} wrap>
-                    Category : {allDetails.category}
-                  </Text>
-                  {allDetails.amountSummary && (
-                    <Text style={{ fontSize: 10, paddingHorizontal: 4 }} wrap>
-                      Acc. Summary :{allDetails.amountSummary}
+                    <Text style={{ fontSize: 10, paddingLeft: 4 }} wrap>
+                      DOI :{" "}
+                      {allDetails.dateOfInsertion &&
+                      allDetails.dateOfInsertion.includes(",")
+                        ? allDetails.dateOfInsertion
+                        : allDetails.dateOfInsertion
+                        ? allDetails.dateOfInsertion.split(" ").join(", ")
+                        : ""}
                     </Text>
-                  )}
-                </View>
-                {/* <View
-              style={{
-                flexDirection: "column",
-                textAlign: "right",
-                fontSize: 10,
-                fontWeight: "bold",
-              }}
-            >
-              <Text>OUTPUT C GST@2.5%</Text>
-              <Text>OUTPUT UT GST/ S GST@2.5% </Text>
-            </View> */}
+                    {/* <Text style={{ fontSize: 10, paddingLeft: 4 }}>
+                      Remark : {allDetails.remark}
+                    </Text> */}
+                    <Text style={{ fontSize: 10, paddingLeft: 4 }} wrap>
+                      Category : {allDetails.category}
+                    </Text>
+                    {allDetails.amountSummary && (
+                      <Text style={{ fontSize: 10, paddingHorizontal: 4 }} wrap>
+                        Acc. Summary :{allDetails.amountSummary}
+                      </Text>
+                    )}
+                  </View>
+                )}
               </View>
             </View>
           </View>
-          <View style={{ flex: 2, width: "50%", flexDirection: "column" }}>
-            <View style={{ flexDirection: "row", flex: 1.5 }}>
-              <View
-                style={{
-                  flex: 1,
-                  gap: 2,
-                  borderRight: "1 solid black",
-                  borderBottom: "1 solid black",
-                  padding: 2,
-                }}
-              >
-                <Text>Invoice No.</Text>
-                <Text style={{ fontWeight: "bold" }}>{allDetails.orderId}</Text>
+          <View style={{ flex: 4, width: "50%", flexDirection: "column" }}>
+            <View style={{ flex: 1, flexDirection: "column" }}>
+              <View style={{ flexDirection: "row", flex: 0.5 }}>
+                <View
+                  style={{
+                    flex: 1,
+                    gap: 2,
+                    borderRight: "1 solid black",
+                    borderBottom: "1 solid black",
+                    padding: 2,
+                  }}
+                >
+                  <Text>Invoice No.</Text>
+                  <Text style={{ fontWeight: "bold" }}>
+                    {Array.isArray(allDetails.orderIds)
+                      ? allDetails.orderIds.join(", ")
+                      : allDetails.orderId || ""}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    gap: 2,
+                    borderBottom: "1 solid black",
+                    padding: 2,
+                  }}
+                >
+                  <Text>Dated:</Text>
+                  <Text style={{ fontWeight: "bold" }}>
+                    {allDetails.billDate
+                      ? `${new Date(allDetails.billDate).getDate()}/${
+                          new Date(allDetails.billDate).getMonth() + 1
+                        }/${new Date(allDetails.billDate).getFullYear()}`
+                      : ""}
+                  </Text>
+                </View>
               </View>
-              <View
-                style={{
-                  flex: 1,
-                  gap: 2,
-                  borderBottom: "1 solid black",
-                  padding: 2,
-                }}
-              >
-                <Text>Dated:</Text>
-                <Text style={{ fontWeight: "bold" }}>
-                  {billDetails.billDate
-                    ? `${new Date(billDetails.billDate).getDate()}/${
-                        new Date(billDetails.billDate).getMonth() + 1
-                      }/${new Date(billDetails.billDate).getFullYear()}`
-                    : ""}
-                </Text>
+              <View style={{ flexDirection: "row", flex: 0.5 }}>
+                <View
+                  style={{
+                    flex: 1,
+                    borderRight: "1 solid black",
+                    borderBottom: "1 solid black",
+                    padding: 2,
+                  }}
+                >
+                  <Text>Client GST No.</Text>
+                  <Text style={{ fontWeight: "bold" }}>
+                    {allDetails.clientGSTNumber
+                      ? allDetails.clientGSTNumber
+                      : "N/A"}
+                  </Text>
+                </View>
+                <View
+                  style={{ flex: 1, borderBottom: "1 solid black", padding: 2 }}
+                >
+                  <Text>Mode/Terms of Payment</Text>
+                </View>
               </View>
-            </View>
-            <View style={{ flexDirection: "row", flex: 1.5 }}>
-              <View
-                style={{
-                  flex: 1,
-                  borderRight: "1 solid black",
-                  borderBottom: "1 solid black",
-                  padding: 2,
-                }}
-              >
-                <Text>Client GST No.</Text>
-                <Text style={{ fontWeight: "bold" }}>
-                  {billDetails.clientGSTNumber
-                    ? billDetails.clientGSTNumber
-                    : "N/A"}
-                </Text>
+              <View style={{ flexDirection: "row", flex: 0.5 }}>
+                <View
+                  style={{
+                    flex: 1,
+                    borderRight: "1 solid black",
+                    borderBottom: "1 solid black",
+                    padding: 2,
+                  }}
+                >
+                  <Text>Reference No. & Date</Text>
+                </View>
+                <View
+                  style={{ flex: 1, borderBottom: "1 solid black", padding: 2 }}
+                >
+                  <Text>Other References</Text>
+                </View>
               </View>
-              <View
-                style={{ flex: 1, borderBottom: "1 solid black", padding: 2 }}
-              >
-                <Text>Mode/Terms of Payment</Text>
+              <View style={{ flexDirection: "row", flex: 0.5 }}>
+                <View
+                  style={{
+                    flex: 1,
+                    borderRight: "1 solid black",
+                    borderBottom: "1 solid black",
+                    padding: 2,
+                  }}
+                >
+                  <Text>Buyer's Order No.</Text>
+                </View>
+                <View
+                  style={{ flex: 1, borderBottom: "1 solid black", padding: 2 }}
+                >
+                  <Text>Dated</Text>
+                </View>
               </View>
-            </View>
-            <View style={{ flexDirection: "row", flex: 1.5 }}>
-              <View
-                style={{
-                  flex: 1,
-                  borderRight: "1 solid black",
-                  borderBottom: "1 solid black",
-                  padding: 2,
-                }}
-              >
-                <Text>Reference No. & Date</Text>
+              <View style={{ flexDirection: "row", flex: 0.5 }}>
+                <View
+                  style={{
+                    flex: 1,
+                    borderRight: "1 solid black",
+                    borderBottom: "1 solid black",
+                    padding: 2,
+                  }}
+                >
+                  <Text>Dispatch Doc No.</Text>
+                </View>
+                <View
+                  style={{ flex: 1, borderBottom: "1 solid black", padding: 2 }}
+                >
+                  <Text>Delivery Note Date</Text>
+                </View>
               </View>
-              <View
-                style={{ flex: 1, borderBottom: "1 solid black", padding: 2 }}
-              >
-                <Text>Other References</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: "row", flex: 1.5 }}>
-              <View
-                style={{
-                  flex: 1,
-                  borderRight: "1 solid black",
-                  borderBottom: "1 solid black",
-                  padding: 2,
-                }}
-              >
-                <Text>Buyer's Order No.</Text>
-              </View>
-              <View
-                style={{ flex: 1, borderBottom: "1 solid black", padding: 2 }}
-              >
-                <Text>Dated</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: "row", flex: 1.5 }}>
-              <View
-                style={{
-                  flex: 1,
-                  borderRight: "1 solid black",
-                  borderBottom: "1 solid black",
-                  padding: 2,
-                }}
-              >
-                <Text>Dispatch Doc No.</Text>
-              </View>
-              <View
-                style={{ flex: 1, borderBottom: "1 solid black", padding: 2 }}
-              >
-                <Text>Delivery Note Date</Text>
-              </View>
-            </View>
-            <View style={{ flexDirection: "row", flex: 1.5 }}>
-              <View
-                style={{
-                  flex: 1,
-                  borderRight: "1 solid black",
-                  // borderBottom: "1 solid black",
-                  padding: 2,
-                }}
-              >
-                <Text>Dispatched through</Text>
-              </View>
-              <View style={{ flex: 1, padding: 2 }}>
-                <Text>HUE</Text>
-                <Text style={{ fontWeight: "bold" }}>{allDetails.hui}</Text>
-              </View>
-            </View>
-            {/* Goods Table */}
-            <View
-              style={{
-                flexDirection: "row",
-                flex: 1,
-              }}
-            >
-              <View
-                style={{
-                  width: "20%",
-                  borderRight: "1 solid black",
-                  padding: 2,
-                  textAlign: "center",
-                  borderTop: "1 solid black",
-                }}
-              >
-                <Text style={{ fontWeight: "bold" }}>Quantity </Text>
-              </View>
-              <View
-                style={{
-                  width: "20%",
-                  borderRight: "1 solid black",
-                  padding: 2,
-                  textAlign: "center",
-                  borderTop: "1 solid black",
-                }}
-              >
-                <Text style={{ fontWeight: "bold" }}>Rate</Text>
-              </View>
-              <View
-                style={{
-                  width: "20%",
-                  borderRight: "1 solid black",
-                  padding: 2,
-                  textAlign: "center",
-                  borderTop: "1 solid black",
-                }}
-              >
-                <Text style={{ fontWeight: "bold" }}>Width</Text>
-              </View>
-              <View
-                style={{
-                  width: "20%",
-                  borderRight: "1 solid black",
-                  padding: 2,
-                  textAlign: "center",
-                  borderTop: "1 solid black",
-                }}
-              >
-                <Text style={{ fontWeight: "bold" }}>Height</Text>
-              </View>
-              <View
-                style={{
-                  width: "20%",
-                  padding: 2,
-                  textAlign: "center",
-                  borderBottom: "1 solid black",
-                  borderTop: "1 solid black",
-                  height: "21px",
-                }}
-              >
-                <Text style={{ fontWeight: "bold" }}>Amount</Text>
+              <View style={{ flexDirection: "row", flex: 0.5 }}>
+                <View
+                  style={{
+                    flex: 1,
+                    borderRight: "1 solid black",
+                    // borderBottom: "1 solid black",
+                    padding: 2,
+                  }}
+                >
+                  <Text>Dispatched through</Text>
+                </View>
+                <View style={{ flex: 1, padding: 2 }}>
+                  <Text>HUE</Text>
+                  <Text style={{ fontWeight: "bold" }}>{allDetails.hui}</Text>
+                </View>
               </View>
             </View>
-
-            {/* Sample Row */}
-            <View
-              style={{
-                flexDirection: "row",
-                flex: 6,
-              }}
-            >
+            <View style={{ flex: 3.02, flexDirection: "column" }}>
+              {/* Goods Table */}
               <View
                 style={{
-                  width: "80%",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  borderRight: "1 solid black",
-                  borderTop: "1 solid black",
+                  flexDirection: "row",
+                  flex: 1,
                 }}
               >
                 <View
                   style={{
-                    flex: 1,
+                    width: "20%",
+                    borderRight: "1 solid black",
+                    padding: 2,
+                    textAlign: "center",
+                    borderTop: "1 solid black",
+                    fontSize: 9,
                     flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
-                  <View
-                    style={{
-                      flex: 1,
-                      borderRight: "1 solid black",
-                      borderBottom: "1 solid black",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        padding: 2,
-                      }}
-                    >
-                      {/* {allDetails.roMultiplyBy} */}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      borderBottom: "1 solid black",
-                      borderRight: "1 solid black",
-                      textAlign: "center",
-                    }}
-                  >
-                    <View>
-                      <Text
+                  <Text style={{ fontWeight: "bold" }}>Quantity </Text>
+                </View>
+                <View
+                  style={{
+                    width: "20%",
+                    borderRight: "1 solid black",
+                    padding: 2,
+                    textAlign: "center",
+                    borderTop: "1 solid black",
+                    fontSize: 9,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold" }}>Rate</Text>
+                </View>
+                <View
+                  style={{
+                    width: "20%",
+                    borderRight: "1 solid black",
+                    padding: 2,
+                    textAlign: "center",
+                    borderTop: "1 solid black",
+                    fontSize: 9,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold" }}>Width</Text>
+                </View>
+                <View
+                  style={{
+                    width: "20%",
+                    borderRight: "1 solid black",
+                    padding: 2,
+                    textAlign: "center",
+                    borderTop: "1 solid black",
+                    fontSize: 9,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold" }}>Height</Text>
+                </View>
+                <View
+                  style={{
+                    width: "20%",
+                    borderBottom: "1 solid black",
+                    padding: 2,
+                    textAlign: "center",
+                    borderTop: "1 solid black",
+                    fontSize: 9,
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "34px",
+                  }}
+                >
+                  <Text style={{ fontWeight: "bold" }}>Amount</Text>
+                </View>
+              </View>
+
+              {/* Sample Row */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  flex: 13.5,
+                }}
+              >
+                {/* LEFT TABLE PART */}
+                <View
+                  style={{
+                    width: "80%",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    borderRight: "1 solid black",
+                    borderTop: "1 solid black",
+                  }}
+                >
+                  <View>
+                    {/* ==== PRODUCT ROWS ==== */}
+                    {allDetails.orders.map((item, index) => (
+                      <View
+                        key={index}
                         style={{
-                          padding: 2,
+                          flexDirection: "row",
+                          borderBottom: "1 solid black",
                         }}
                       >
-                        {/* {allDetails.qRate}{" "} */}
-                      </Text>
-                    </View>
-                    {/* <View
-              style={{
-                flexDirection: "column",
-                textAlign: "right",
-                fontSize: 10,
-              }}
-            >
-              <Text>2.5%</Text>
-              <Text>2.5%</Text>
-            </View> */}
+                        <View
+                          style={{
+                            flex: 1,
+                            borderRight: "1 solid black",
+                            textAlign: "center",
+                            paddingVertical: "6px",
+                            fontSize: 9,
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ padding: 2 }}></Text>
+                        </View>
+                        <View
+                          style={{
+                            flex: 1,
+                            borderRight: "1 solid black",
+                            textAlign: "center",
+                            paddingVertical: "6px",
+                            fontSize: 9,
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ padding: 2 }}></Text>
+                        </View>
+                        <View
+                          style={{
+                            flex: 1,
+                            borderRight: "1 solid black",
+                            textAlign: "center",
+                            paddingVertical: "6px",
+                            fontSize: 9,
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ padding: 2 }}>{item.roWidth}</Text>
+                        </View>
+                        <View
+                          style={{
+                            flex: 1,
+                            textAlign: "center",
+                            paddingVertical: "6px",
+                            fontSize: 9,
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ padding: 2 }}>{item.roHeight}</Text>
+                        </View>
+                      </View>
+                    ))}
                   </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      borderBottom: "1 solid black",
-                      borderRight: "1 solid black",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Text
+
+                  {/* ==== SUMMARY ROWS ==== */}
+                  <View>
+                    <View
                       style={{
-                        padding: 2,
+                        borderBottom: "1 solid black",
+                        borderTop: "1 solid black",
+
+                        justifyContent: "flex-end",
+                        paddingRight: 4,
                       }}
                     >
-                      {allDetails.roWidth}{" "}
-                    </Text>
-
-                    {/* <View>
-              <Text> </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "column",
-                textAlign: "right",
-                fontSize: 10,
-              }}
-            >
-              <Text>2.5</Text>
-              <Text>2.5</Text>
-            </View> */}
+                      <Text
+                        style={{
+                          textAlign: "right",
+                          paddingVertical: "6px",
+                          fontSize: 9,
+                        }}
+                      >
+                        Discount
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        borderBottom: "1 solid black",
+                        justifyContent: "flex-end",
+                        paddingRight: 4,
+                        paddingVertical: "6px",
+                        fontSize: 9,
+                      }}
+                    >
+                      <Text style={{ textAlign: "right" }}>After Discount</Text>
+                    </View>
+                    <View
+                      style={{
+                        borderBottom: "1 solid black",
+                        justifyContent: "flex-end",
+                        paddingRight: 4,
+                        paddingVertical: "6px",
+                        fontSize: 9,
+                      }}
+                    >
+                      <Text style={{ textAlign: "right" }}>
+                        {allDetails.typeOfGST === "CGST+SGST"
+                          ? `CGST ${allDetails.percentageOfGST}% + SGST ${allDetails.percentageOfGST}%`
+                          : `IGST ${allDetails.percentageOfGST}%`}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        justifyContent: "flex-end",
+                        paddingRight: 4,
+                        paddingVertical: "6px",
+                        fontSize: 9,
+                      }}
+                    >
+                      <Text style={{ textAlign: "right" }}>Net Amount</Text>
+                    </View>
                   </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      borderBottom: "1 solid black",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Text style={{ padding: 2 }}>{allDetails.roHeight} </Text>
+                </View>
 
-                    {/* <View>
-              <Text> </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: "column",
-                textAlign: "right",
-                fontSize: 10,
-              }}
-            >
-              <Text>%</Text>
-              <Text>%</Text>
-            </View> */}
-                  </View>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    borderBottom: "1 solid black",
-                    justifyContent: "flex-end",
-                    paddingRight: 4,
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: "right",
-                    }}
-                  >
-                    Discount
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    borderBottom: "1 solid black",
-                    justifyContent: "flex-end",
-                    paddingRight: 4,
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: "right",
-                    }}
-                  >
-                    After Discount
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    borderBottom: "1 solid black",
-                    justifyContent: "flex-end",
-                    paddingRight: 4,
-                    // borderTop: "1 solid black",
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: "right",
-                    }}
-                  >
-                    {allDetails.typeOfGST == "CGST+SGST" &&
-                      `CGST ${allDetails.percentageOfGST}% + SGST ${allDetails.percentageOfGST}%`}
-                    {allDetails.typeOfGST == "IGST" &&
-                      `IGST ${allDetails.percentageOfGST}%`}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "flex-end",
-                    paddingRight: 4,
-                  }}
-                >
-                  <Text
-                    style={{
-                      textAlign: "right",
-                    }}
-                  >
-                    Net Amount
-                  </Text>
-                </View>
-              </View>
+                {/* RIGHT TOTAL COLUMN */}
 
-              <View
-                style={{
-                  width: "20%",
-                  flexDirection: "column",
-                }}
-              >
                 <View
                   style={{
-                    display: "flex",
+                    width: "20%",
                     flexDirection: "column",
-                    flex: 5,
+                    justifyContent: "space-between",
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 10,
-                      fontWeight: "bold",
-                      flex: 1,
-                      textAlign: "right",
-                      borderBottom: "1 solid black",
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                      padding: 1,
-                    }}
-                  >
-                    {new Intl.NumberFormat("en-IN").format(
-                      Number(allDetails.billAmount).toFixed(2)
-                    )}
-                  </Text>
-                  <Text
-                    style={{
-                      flex: 1,
-                      textAlign: "right",
-                      borderBottom: "1 solid black",
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                      padding: 1,
-                    }}
-                  >
-                    {new Intl.NumberFormat("en-IN").format(
-                      Number(allDetails.discount).toFixed(2)
-                    )}
-                  </Text>
-                  <Text
-                    style={{
-                      flex: 1,
-                      textAlign: "right",
-                      borderBottom: "1 solid black",
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                      padding: 1,
-                    }}
-                  >
-                    <Text>
+                  <View>
+                    {/* ==== PRODUCT AMOUNT ROWS ==== */}
+                    {allDetails.billAmount.map((item, index) => (
+                      <Text
+                        key={index}
+                        style={{
+                          textAlign: "right",
+                          borderBottom: "1 solid black",
+                          padding: 2,
+                          fontSize: 9,
+                          flexDirection: "row",
+                          padding: "8px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: "29.5px",
+                        }}
+                      >
+                        {new Intl.NumberFormat("en-IN").format(
+                          Number(item).toFixed(2)
+                        )}
+                      </Text>
+                    ))}
+                  </View>
+
+                  <View>
+                    {/* ==== SUMMARY VALUES ==== */}
+                    <Text
+                      style={{
+                        textAlign: "right",
+                        borderBottom: "1 solid black",
+                        padding: 6,
+                        fontSize: 9,
+                        flexDirection: "row",
+                        borderTop: "1 solid black",
+
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "26.3px",
+                      }}
+                    >
+                      {new Intl.NumberFormat("en-IN").format(
+                        Number(allDetails.discount).toFixed(2)
+                      )}
+                    </Text>
+                    <Text
+                      style={{
+                        textAlign: "right",
+                        borderBottom: "1 solid black",
+                        padding: 6,
+                        fontSize: 9,
+                        flexDirection: "row",
+
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "26px",
+                      }}
+                    >
                       {new Intl.NumberFormat("en-IN").format(
                         (
-                          Number(allDetails.billAmount) -
+                          Number(allDetails.totalBeforeDiscount) -
                           Number(allDetails.discount)
                         ).toFixed(2)
                       )}
                     </Text>
-                  </Text>
-                  <Text
-                    style={{
-                      flex: 1,
-                      textAlign: "right",
-                      borderBottom: "1 solid black",
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                      padding: 1,
-                    }}
-                  >
-                    {allDetails.typeOfGST == "CGST+SGST" &&
-                      `${new Intl.NumberFormat("en-IN").format(
-                        (
-                          ((Number(allDetails.billAmount) -
-                            allDetails.discount) *
-                            (allDetails.percentageOfGST * 2)) /
-                          100
-                        ).toFixed(2)
-                      )}`}
-                    {allDetails.typeOfGST == "IGST" &&
-                      `${new Intl.NumberFormat("en-IN").format(
-                        (
-                          ((Number(allDetails.billAmount) -
-                            allDetails.discount) *
-                            allDetails.percentageOfGST) /
-                          100
-                        ).toFixed(2)
-                      )}`}
-                  </Text>
-                  <Text
-                    style={{
-                      flex: 1,
-                      textAlign: "right",
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                      textAlign: "right",
-                      fontWeight: "bold",
-                      fontSize: 10,
-                      padding: 1,
-                    }}
-                  >
-                    {/* {Math.ceil(
-                    Number(allDetails.billAmount) -
-                        allDetails.discount +
-                      (Number(allDetails.billAmount) -
-                        allDetails.discount * allDetails.percentageOfGST) /
-                        100
-                  )} */}
-                    {`${new Intl.NumberFormat("en-IN").format(
-                      Math.ceil(Number(allDetails.billTotalAmount))
-                    )}`}
-                  </Text>
+                    <Text
+                      style={{
+                        textAlign: "right",
+                        borderBottom: "1 solid black",
+                        padding: 6,
+                        fontSize: 9,
+                        flexDirection: "row",
+
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "25.2px",
+                      }}
+                    >
+                      {/* {new Intl.NumberFormat("en-IN").format(
+                        Number(allDetails.taxAmount).toFixed(2)
+                      )} */}
+                      {allDetails.typeOfGST == "CGST+SGST" && (
+                        <Text>
+                          {new Intl.NumberFormat("en-IN").format(
+                            (
+                              ((Number(allDetails.totalBeforeDiscount) -
+                                allDetails.discount) *
+                                (allDetails.percentageOfGST * 2)) /
+                              100
+                            ).toFixed(2)
+                          )}
+                        </Text>
+                      )}
+                      {allDetails.typeOfGST == "IGST" && (
+                        <Text>
+                          {new Intl.NumberFormat("en-IN").format(
+                            (
+                              ((Number(allDetails.totalBeforeDiscount) -
+                                allDetails.discount) *
+                                allDetails.percentageOfGST) /
+                              100
+                            ).toFixed(2)
+                          )}
+                        </Text>
+                      )}
+                    </Text>
+                    <Text
+                      style={{
+                        textAlign: "right",
+                        fontWeight: "bold",
+                        padding: 6,
+                        fontSize: 9,
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "25.2px",
+                      }}
+                    >
+                      {new Intl.NumberFormat("en-IN").format(
+                        Math.ceil(Number(allDetails.billTotalAmount))
+                      )}
+                    </Text>
+                  </View>
                 </View>
-                {/* <View
-              style={{
-                flexDirection: "column",
-                fontSize: 10,
-              }}
-            >
-              <Text>{Math.ceil(Number(allDetails.billAmount) -
-                        allDetails.discount * 0.025)}</Text>
-              <Text>{Math.ceil(Number(allDetails.billAmount) -
-                        allDetails.discount * 0.025)}</Text>
-            </View> */}
               </View>
             </View>
-            {/* <View style={{ flexDirection: "row", flex: 4, padding: 2 }}>
-              <View style={{ flex: 1 }}>
-                <Text>Terms of Delivery</Text>
-              </View>
-            </View> */}
           </View>
         </View>
-
-        {/* Result Row */}
-        {/* <View
-          style={{
-            flexDirection: "row",
-            borderTop: "1 solid black",
-          }}
-        >
-          <View
-            style={{
-              width: "5%",
-              marginRight: 5,
-              borderRight: "1 solid black",
-              padding: 2,
-            }}
-          >
-            <Text>1</Text>
-          </View>
-          <View
-            style={{
-              width: "45%",
-              borderRight: "1 solid black",
-              padding: 2,
-              textAlign: "right",
-            }}
-          >
-            <Text>Total</Text>
-          </View>
-          <View
-            style={{ width: "40%", borderRight: "1 solid black", padding: 2 }}
-          >
-            <Text></Text>
-          </View>
-
-          <View
-            style={{
-              width: "10%",
-              padding: 2,
-              textAlign: "right",
-              fontWeight: "bold",
-              fontSize: 10,
-            }}
-          >
-            <Text>
-              {Math.ceil(
-                Number(allDetails.billAmount) -
-                        allDetails.discount + Number(allDetails.billAmount) -
-                        allDetails.discount * 0.05
-              )}
-            </Text>
-          </View>
-        </View> */}
       </View>
     </Page>
     <Page
@@ -922,64 +894,10 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
           border: "1 solid black",
         }}
       >
-        {/* Header */}
-
-        {/* Result Row */}
-        {/* <View
-          style={{
-            flexDirection: "row",
-            borderTop: "1 solid black",
-          }}
-        >
-          <View
-            style={{
-              width: "5%",
-              marginRight: 5,
-              borderRight: "1 solid black",
-              padding: 2,
-            }}
-          >
-            <Text>1</Text>
-          </View>
-          <View
-            style={{
-              width: "45%",
-              borderRight: "1 solid black",
-              padding: 2,
-              textAlign: "right",
-            }}
-          >
-            <Text>Total</Text>
-          </View>
-          <View
-            style={{ width: "40%", borderRight: "1 solid black", padding: 2 }}
-          >
-            <Text></Text>
-          </View>
-
-          <View
-            style={{
-              width: "10%",
-              padding: 2,
-              textAlign: "right",
-              fontWeight: "bold",
-              fontSize: 10,
-            }}
-          >
-            <Text>
-              {Math.ceil(
-                Number(allDetails.billAmount) -
-                        allDetails.discount + Number(allDetails.billAmount) -
-                        allDetails.discount * 0.05
-              )}
-            </Text>
-          </View>
-        </View> */}
-
         <View
           style={{
             display: "flex",
-            borderTop: "1px solid black",
+            // borderTop: "1px solid black",
             flexDirection: "column",
             fontSize: 9,
           }}
@@ -1111,7 +1029,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 <Text>
                   {new Intl.NumberFormat("en-IN").format(
                     (
-                      Number(allDetails.billAmount) - allDetails.discount
+                      Number(allDetails.totalBeforeDiscount) -
+                      allDetails.discount
                     ).toFixed(2)
                   )}
                 </Text>
@@ -1128,7 +1047,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 <Text>
                   {new Intl.NumberFormat("en-IN").format(
                     (
-                      Number(allDetails.billAmount) - allDetails.discount
+                      Number(allDetails.totalBeforeDiscount) -
+                      allDetails.discount
                     ).toFixed(2)
                   )}
                 </Text>
@@ -1215,7 +1135,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   <Text>
                     {new Intl.NumberFormat("en-IN").format(
                       (
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                        ((Number(allDetails.totalBeforeDiscount) -
+                          allDetails.discount) *
                           allDetails.percentageOfGST) /
                         100
                       ).toFixed(2)
@@ -1253,7 +1174,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   <Text>
                     {new Intl.NumberFormat("en-IN").format(
                       (
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                        ((Number(allDetails.totalBeforeDiscount) -
+                          allDetails.discount) *
                           allDetails.percentageOfGST) /
                         100
                       ).toFixed(2)
@@ -1345,7 +1267,7 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                     <Text>
                       {new Intl.NumberFormat("en-IN").format(
                         (
-                          ((Number(allDetails.billAmount) -
+                          ((Number(allDetails.totalBeforeDiscount) -
                             allDetails.discount) *
                             allDetails.percentageOfGST) /
                           100
@@ -1387,7 +1309,7 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                     <Text>
                       {new Intl.NumberFormat("en-IN").format(
                         (
-                          ((Number(allDetails.billAmount) -
+                          ((Number(allDetails.totalBeforeDiscount) -
                             allDetails.discount) *
                             allDetails.percentageOfGST) /
                           100
@@ -1429,7 +1351,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   <Text>
                     {new Intl.NumberFormat("en-IN").format(
                       (
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                        ((Number(allDetails.totalBeforeDiscount) -
+                          allDetails.discount) *
                           (allDetails.percentageOfGST * 2)) /
                         100
                       ).toFixed(2)
@@ -1440,7 +1363,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   <Text>
                     {new Intl.NumberFormat("en-IN").format(
                       (
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                        ((Number(allDetails.totalBeforeDiscount) -
+                          allDetails.discount) *
                           allDetails.percentageOfGST) /
                         100
                       ).toFixed(2)
@@ -1461,7 +1385,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   <Text>
                     {new Intl.NumberFormat("en-IN").format(
                       (
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                        ((Number(allDetails.totalBeforeDiscount) -
+                          allDetails.discount) *
                           (allDetails.percentageOfGST * 2)) /
                         100
                       ).toFixed(2)
@@ -1472,7 +1397,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   <Text>
                     {new Intl.NumberFormat("en-IN").format(
                       (
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                        ((Number(allDetails.totalBeforeDiscount) -
+                          allDetails.discount) *
                           allDetails.percentageOfGST) /
                         100
                       ).toFixed(2)
@@ -1668,7 +1594,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                 {allDetails.typeOfGST == "CGST+SGST"
                   ? convertAmountToWords(
                       (
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                        ((Number(allDetails.totalBeforeDiscount) -
+                          allDetails.discount) *
                           (allDetails.percentageOfGST * 2)) /
                         100
                       ).toFixed(2)
@@ -1676,7 +1603,8 @@ const MultiROInvoicePDF = ({ allDetails = {}, billDetails = {} }) => (
                   : allDetails.typeOfGST == "IGST"
                   ? convertAmountToWords(
                       (
-                        ((Number(allDetails.billAmount) - allDetails.discount) *
+                        ((Number(allDetails.totalBeforeDiscount) -
+                          allDetails.discount) *
                           allDetails.percentageOfGST) /
                         100
                       ).toFixed(2)
