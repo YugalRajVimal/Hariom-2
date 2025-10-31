@@ -129,6 +129,8 @@ const AllMultiROBillsNew = () => {
             <thead className="bg-purple-100">
               <tr>
                 <th className="py-2 px-4 border-b text-left">Date</th>
+                <th className="py-2 px-4 border-b text-left">Invoice No</th>
+
                 <th className="py-2 px-4 border-b text-left">Order Id</th>
                 <th className="py-2 px-4 border-b text-left">Client Name</th>
 
@@ -173,6 +175,7 @@ const AllMultiROBillsNew = () => {
                       <td className="py-2 px-4 border-b">
                         {new Date(order.billDate).toLocaleDateString()}
                       </td>
+                      <td className="py-2 px-4 border-b">{order.invoiceId}</td>
                       <td className="py-2 px-4 border-b">
                         {Array.isArray(order.orderIds)
                           ? order.orderIds.join(", ")

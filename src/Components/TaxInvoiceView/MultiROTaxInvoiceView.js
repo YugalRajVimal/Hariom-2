@@ -397,9 +397,7 @@ const MultiROInvoicePDF = ({ allDetails = {} }) => (
                 >
                   <Text>Invoice No.</Text>
                   <Text style={{ fontWeight: "bold" }}>
-                    {Array.isArray(allDetails.orderIds)
-                      ? allDetails.orderIds.join(", ")
-                      : allDetails.orderId || ""}
+                    {allDetails.invoiceId}
                   </Text>
                 </View>
                 <View
